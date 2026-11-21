@@ -1,0 +1,1280 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>I Always Win</title>
+<meta name="description" content="Щоденна система перемог: звички, плани, записник, фінанси, цілі.">
+<meta name="theme-color" content="#0F1110">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/icons/logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="I Always Win">
+<style>body{margin:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a dark rounded sidebar panel beside a light-grey editorial canvas; big tight grotesque headings, rounded cards, pill controls, one muted mint accent. */
+:root{
+  --bg:#E7E9E7; --surface:#F6F7F5; --surface-2:#EEF0EE; --ink:#101211; --muted:#868C89; --line:#D6DAD7;
+  --panel:#0F1110; --panel-fg:#F1F3F1; --panel-muted:#7E8481; --panel-line:#262928;
+  --mint:#BFE3D2; --mint-ink:#1E4A37; --danger:#B4412F; --on-ink:#F6F7F5;
+  --f-display:"Inter Tight","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Inter","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r-card:28px; --r-sm:16px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B0C0C; --surface:#161817; --surface-2:#1E2120; --ink:#ECEFED; --muted:#7D8481; --line:#2A2E2C;
+  --panel:#161817; --panel-fg:#ECEFED; --panel-muted:#7D8481; --panel-line:#2A2E2C;
+  --mint:#A6D6C0; --mint-ink:#123526; --danger:#E0745F; --on-ink:#0F1110; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B0C0C; --surface:#161817; --surface-2:#1E2120; --ink:#ECEFED; --muted:#7D8481; --line:#2A2E2C;
+  --panel:#161817; --panel-fg:#ECEFED; --panel-muted:#7D8481; --panel-line:#2A2E2C;
+  --mint:#A6D6C0; --mint-ink:#123526; --danger:#E0745F; --on-ink:#0F1110; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+.app{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;min-height:100%;
+  padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.side{background:var(--panel);color:var(--panel-fg);border-radius:var(--r-card);padding:24px 18px;display:flex;flex-direction:column;gap:28px;position:sticky;top:16px;height:calc(100vh - 32px);min-height:520px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:.92;letter-spacing:-.045em;text-transform:uppercase;padding-inline:8px}
+.brand span{color:var(--panel-muted)}
+.brand small{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.02em;text-transform:none;color:var(--panel-muted);margin-top:10px;font-weight:400}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav button{display:flex;align-items:center;gap:12px;border:0;background:transparent;color:var(--panel-muted);padding:11px 12px;border-radius:999px;font-weight:500;text-align:left;font-size:15px}
+.nav button:hover{color:var(--panel-fg);background:var(--panel-line)}
+.nav button[aria-current="page"]{background:var(--panel-fg);color:var(--panel)}
+.nav svg{width:20px;height:20px;flex:none}
+.nav .sm{display:none}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-inline:8px}
+.today-card{border:1px solid var(--panel-line);border-radius:20px;padding:14px}
+.today-card .d{font-family:var(--f-display);font-size:40px;font-weight:600;letter-spacing:-.04em;line-height:1}
+.today-card .m{color:var(--panel-muted);font-size:13px;margin-top:6px}
+.sync{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--panel-muted)}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--panel-muted);display:inline-block}
+.sync.ok i{background:var(--mint)}
+.sync.bad i{background:var(--danger)}
+
+main{min-width:0;display:flex;flex-direction:column;gap:16px;padding-bottom:24px}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 24px;padding:20px 8px 8px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ink)}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(44px,7vw,96px);line-height:.9;letter-spacing:-.05em;margin:10px 0 0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--muted)}
+h2{font-family:var(--f-display);font-weight:600;font-size:24px;letter-spacing:-.03em;margin:0;line-height:1.1}
+h3{font-family:var(--f-display);font-weight:600;font-size:19px;letter-spacing:-.02em;margin:0;line-height:1.2}
+.card{background:var(--surface);border-radius:var(--r-card);padding:22px;min-width:0}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+.btn{display:inline-flex;align-items:center;gap:10px;border:0;border-radius:999px;padding:10px 10px 10px 18px;background:var(--ink);color:var(--on-ink);font-weight:500;white-space:nowrap}
+.btn .ar{width:28px;height:28px;border-radius:50%;background:var(--on-ink);color:var(--ink);display:grid;place-items:center}
+.btn .ar svg{width:14px;height:14px}
+.btn.plain{padding:10px 18px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);padding:9px 16px}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.danger{background:transparent;color:var(--danger);border:1px solid var(--line);padding:9px 16px}
+.btn.danger.armed{background:var(--danger);color:var(--on-ink);border-color:var(--danger)}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;display:inline-grid;place-items:center;color:var(--ink);flex:none}
+.icon-btn:hover{border-color:var(--ink)}
+.icon-btn svg{width:16px;height:16px}
+.icon-btn.quiet{border-color:transparent;color:var(--muted)}
+.icon-btn.quiet:hover{color:var(--ink);border-color:var(--line)}
+.seg{display:inline-flex;background:var(--surface);border-radius:999px;padding:4px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:8px 16px;border-radius:999px;color:var(--muted);font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--on-ink)}
+
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=search],textarea,select{
+  width:100%;background:var(--surface-2);border:1px solid transparent;border-radius:14px;padding:11px 14px;outline:none;min-width:0}
+input:focus,textarea:focus,select:focus{border-color:var(--ink)}
+textarea{resize:vertical;min-height:180px;line-height:1.55}
+label.field{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);min-width:0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+
+/* home */
+.monthbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.monthpill{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border-radius:999px;padding:4px}
+.monthpill b{font-family:var(--f-display);font-weight:600;letter-spacing:-.02em;min-width:140px;text-align:center;font-size:16px}
+.days{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin;scroll-snap-type:x proximity}
+.day{flex:none;width:56px;border:0;border-radius:20px;background:var(--surface);padding:10px 0 9px;display:flex;flex-direction:column;align-items:center;gap:2px;scroll-snap-align:center;position:relative}
+.day small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.day b{font-family:var(--f-display);font-size:22px;font-weight:600;letter-spacing:-.03em}
+.day:hover{background:var(--surface-2)}
+.day.sel:hover{background:var(--ink)}
+.day.today{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.day.sel{background:var(--ink);color:var(--on-ink)}
+.day.sel small{color:var(--on-ink);opacity:.7}
+.day.weekend:not(.sel) b{color:var(--muted)}
+.day .dot{width:5px;height:5px;border-radius:50%;background:var(--mint-ink);opacity:.8}
+.day.sel .dot{background:var(--mint)}
+.day .dot.none{visibility:hidden}
+.home-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px;align-items:start}
+.progress{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.progress .big{font-family:var(--f-display);font-size:64px;font-weight:600;letter-spacing:-.05em;line-height:.9}
+.bar{height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden;flex:1;min-width:140px}
+.bar i{display:block;height:100%;background:var(--mint);border-radius:999px;transition:width .3s}
+.list{display:flex;flex-direction:column}
+.item{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);min-width:0}
+.item:first-child{border-top:0}
+.item .txt{flex:1;min-width:0;overflow-wrap:anywhere}
+.item.done .txt{color:var(--muted);text-decoration:line-through}
+.check{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);background:transparent;display:grid;place-items:center;flex:none;color:transparent}
+.check:hover{border-color:var(--ink)}
+.check.on{background:var(--mint);border-color:var(--mint);color:var(--mint-ink)}
+.check svg{width:14px;height:14px}
+.emo{font-size:20px;width:28px;text-align:center;flex:none}
+.time{font-family:var(--f-mono);font-size:12px;color:var(--muted);background:var(--surface-2);border-radius:999px;padding:2px 8px;flex:none}
+.addrow{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.addrow input[type=text]{flex:1 1 180px}
+.addrow input[type=time]{width:120px;flex:none}
+.empty{color:var(--muted);padding:18px 0;font-size:14px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 10px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.tag.warn{background:transparent;box-shadow:inset 0 0 0 1px var(--danger);color:var(--danger)}
+.goal.achieved .tag{background:rgba(255,255,255,.45);color:var(--mint-ink)}
+.tag.mint{background:var(--mint);color:var(--mint-ink)}
+
+/* habits */
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.habit{display:flex;flex-direction:column;gap:16px}
+.habit .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.habit .bigemo{font-size:34px;line-height:1}
+.habit .count{font-family:var(--f-display);font-weight:600;font-size:76px;letter-spacing:-.06em;line-height:.85}
+.habit .count small{font-size:18px;letter-spacing:-.01em;color:var(--muted);margin-left:6px;font-weight:500}
+.dots{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px}
+.dots i{height:16px;border-radius:5px;background:var(--surface-2)}
+.dots i.on{background:var(--mint)}
+.dots i.off{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.stats{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.stats b{color:var(--ink);font-weight:600}
+
+/* notes */
+.notes{columns:3 260px;column-gap:16px}
+.note{break-inside:avoid;margin-bottom:16px;position:relative;padding:18px 18px 14px;transition:box-shadow .15s}
+.note:focus-within{box-shadow:0 0 0 1.5px var(--ink)}
+.note-text{display:block;width:100%;border:0!important;background:transparent!important;padding:0 96px 0 0!important;min-height:0!important;resize:none;overflow:hidden;font-size:16px;line-height:1.55;color:inherit;border-radius:0!important}
+.note-text:first-line{font-weight:600}
+.note-text::placeholder{color:var(--muted)}
+.note-tools{position:absolute;top:10px;right:10px;display:flex;gap:2px}
+.nt{width:32px;height:32px;border-radius:50%;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;opacity:.55;transition:opacity .15s,background-color .15s,color .15s}
+.nt svg{width:16px;height:16px}
+.note:hover .nt,.note:focus-within .nt,.nt.on{opacity:1}
+.nt:hover{background:var(--surface-2);color:var(--ink)}
+.nt.on{color:var(--mint-ink)}
+.note-date{margin-top:12px;font-size:12px;color:var(--muted);font-family:var(--f-mono)}
+.note.pinned{background:var(--mint);color:var(--mint-ink)}
+.note.pinned .note-date,.note.pinned .nt{color:var(--mint-ink)}
+.note.pinned .nt:hover{background:rgba(255,255,255,.4)}
+.note.pinned .note-text::placeholder{color:var(--mint-ink);opacity:.6}
+/* note groups */
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:24px 20px;position:relative}
+.book{position:relative;aspect-ratio:3/4;border:0;padding:0;background:transparent;cursor:pointer;text-align:left;color:inherit;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.book .pages{position:absolute;right:0;top:7px;bottom:7px;width:20px;border-radius:0 7px 7px 0;background:repeating-linear-gradient(to bottom,#F3F1EA 0 2px,#D9D5CA 2px 3px);box-shadow:0 8px 18px -10px rgba(0,0,0,.35)}
+.book .cover{position:absolute;inset:0 7px 0 0;background:var(--bc);color:var(--bf);border-radius:5px 16px 16px 5px;padding:16px 14px 14px 28px;display:flex;flex-direction:column;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 14px 28px -16px rgba(0,0,0,.5)}
+.book .cover::before{content:'';position:absolute;left:0;top:0;bottom:0;width:14px;background:linear-gradient(to right,rgba(0,0,0,.22),rgba(0,0,0,.08));box-shadow:inset -1px 0 0 rgba(255,255,255,.14)}
+.book .cover::after{content:'';position:absolute;left:17px;top:0;bottom:0;width:1.5px;background:rgba(0,0,0,.14)}
+.book .bno{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;opacity:.6}
+.book .bt{font-family:var(--f-display);font-weight:600;font-size:clamp(19px,2.1vw,24px);letter-spacing:-.035em;line-height:1.02;margin-top:14px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.book .bt.sm{font-size:clamp(17px,1.75vw,20px)}.book .bt.xs{font-size:clamp(14px,1.4vw,16px)}
+.book .brule{width:28px;height:2px;background:currentColor;opacity:.35;margin-top:12px;border-radius:2px}
+.book .bfoot{margin-top:auto;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+@media (hover:hover){.book:not(.add):hover{transform:translateY(-5px) rotate(-.8deg)}}
+.book:focus-visible{outline:2px solid var(--ink);outline-offset:4px;border-radius:14px}
+.book.dragging{z-index:5;transition:none;cursor:grabbing}
+.book.dragging .cover{box-shadow:0 26px 40px -18px rgba(0,0,0,.6)}
+.shelf.sorting .book:not(.dragging){transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.book.add .cover{background:transparent;color:var(--ink);border:1.5px dashed var(--line);box-shadow:none;align-items:center;justify-content:center;gap:10px;padding:14px;text-align:center}
+.book.add .cover::before,.book.add .cover::after{display:none}
+.book.add .plus{width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--on-ink);display:grid;place-items:center}
+.book.add .plus svg{width:16px;height:16px}
+.book.add b{font-family:var(--f-display);font-size:16px;font-weight:600}
+.shelf-hint{font-size:13px;color:var(--muted);margin:2px 4px 0}
+.book-pre{width:112px;flex:none;pointer-events:none}
+.book-pre{width:120px}.book-pre .bt{font-size:16px}.book-pre .bt.sm{font-size:14px}.book-pre .bt.xs{font-size:12px}
+.color-picks{display:flex;flex-wrap:wrap;gap:8px}
+.color-picks button{width:34px;height:34px;border-radius:50%;border:0;background:var(--bc);box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);position:relative}
+.color-picks button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ink)}
+.bdot{display:inline-block;width:.5em;height:.68em;border-radius:3px 6px 6px 3px;background:var(--bc);margin-right:.22em;vertical-align:.02em;box-shadow:inset 3px 0 0 rgba(0,0,0,.2)}
+.crumb{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--surface);border-radius:999px;padding:7px 14px 7px 8px;color:var(--muted);font-weight:500}
+.crumb:hover{color:var(--ink)}
+.crumb svg{width:16px;height:16px}
+.nt.move{position:relative;cursor:pointer}
+.nt.move select{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;padding:0}
+.reset-opt{cursor:pointer;align-items:flex-start}
+.reset-opt input{width:20px;height:20px;margin-top:2px;accent-color:var(--ink);flex:none}
+.reset-opt .tag{flex:none;margin-top:2px}
+.confirm-box{margin-top:16px;border:1.5px solid var(--danger);border-radius:20px;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.confirm-box b{color:var(--danger)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.nav button.bottom{margin-top:14px;position:relative}.nav button.bottom::before{content:'';position:absolute;left:12px;right:12px;top:-9px;border-top:1px solid var(--panel-line)}
+@media (max-width:820px){.nav button.bottom{margin-top:0}.nav button.bottom::before{display:none}}
+.note-empty{display:flex;gap:16px;align-items:center;text-align:left;border:1.5px dashed var(--line);background:transparent;cursor:pointer;width:100%;color:var(--ink)}
+.note-empty:hover{border-color:var(--ink)}
+.note-empty .plus{width:44px;height:44px;border-radius:50%;background:var(--ink);color:var(--on-ink);display:grid;place-items:center;flex:none}
+.note-empty .plus svg{width:18px;height:18px}
+@media (hover:none){.nt{opacity:1}}
+
+/* finance */
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.kpi .v{font-family:var(--f-display);font-weight:600;font-size:clamp(28px,3.4vw,44px);letter-spacing:-.04em;line-height:1;margin-top:10px;overflow-wrap:anywhere}
+.kpi.dark{background:var(--ink);color:var(--on-ink)}
+.kpi.dark .muted{color:var(--on-ink);opacity:.6}
+.tx-day{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:16px 0 4px}
+.tx-day:first-child{padding-top:0}
+.amt{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:500;white-space:nowrap}
+.amt.in{color:var(--mint-ink);background:var(--mint);padding:2px 10px;border-radius:999px}
+.item.click{cursor:pointer}
+.item.click:hover .txt b{text-decoration:underline}
+.catbar{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.catbar:first-child{border-top:0}
+.catbar .track{grid-column:2/4;height:8px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+.catbar .track i{display:block;height:100%;background:var(--ink);border-radius:999px}
+.catbar.inc .track i{background:var(--mint-ink)}
+.rep-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.chart{width:100%;height:auto;display:block}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.emoji-picks{display:flex;flex-wrap:wrap;gap:4px}
+.emoji-picks button{width:38px;height:38px;border-radius:12px;border:1px solid transparent;background:var(--surface-2);font-size:19px;line-height:1}
+.emoji-picks button[aria-pressed="true"]{border-color:var(--ink)}
+
+/* goals */
+.goal{display:flex;flex-direction:column;gap:14px}
+.goal.achieved{background:var(--mint);color:var(--mint-ink)}
+.goal.achieved .muted{color:var(--mint-ink);opacity:.7}
+.goal.achieved .bar{background:rgba(255,255,255,.4)}
+.goal.achieved .bar i{background:var(--mint-ink)}
+.goal .bar{flex:none;min-width:0}
+.goal .pct{font-family:var(--f-display);font-size:44px;font-weight:600;letter-spacing:-.05em;line-height:.9}
+.goal .desc{white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+
+.kindseg .cnt{font-size:12px;opacity:.6;margin-left:4px}
+.habit.bad{background:var(--ink);color:var(--on-ink)}
+.habit.bad .sub{opacity:.6}
+.habit.bad .count small{color:var(--on-ink);opacity:.55}
+.habit.bad .span-line{color:var(--on-ink);opacity:.75}
+.habit.bad .span-line b{color:var(--mint)}
+.habit.bad .count{color:var(--mint)}
+.habit.bad .icon-btn.quiet{color:var(--on-ink);opacity:.6}
+.habit.bad .icon-btn.quiet:hover{opacity:1;border-color:transparent}
+.eyebrow-s{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.55;margin-bottom:2px}
+.btn.relapse{background:transparent;color:var(--on-ink);border:1px solid rgba(128,128,128,.45);padding:8px 16px}
+.btn.relapse:hover{border-color:var(--danger);color:var(--danger)}
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--on-ink);border-radius:999px;padding:8px 8px 8px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 12px 32px rgba(0,0,0,.25);max-width:calc(100% - 32px);animation:rise .3s both}
+.toast button{border:0;border-radius:999px;background:var(--mint);color:var(--mint-ink);padding:8px 16px;font-weight:600}
+@media (max-width:820px){.toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}}
+/* collapsible */
+.fold{display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:0;text-align:left;cursor:pointer;min-width:0}
+.fold .chev{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;flex:none;transition:transform .2s}
+.fold .chev svg{width:14px;height:14px}
+.fold[aria-expanded="false"] .chev{transform:rotate(-90deg)}
+.card.folded .card-head{margin-bottom:0}
+.span-line{font-size:14px;color:var(--muted)}
+.span-line b{color:var(--ink);font-weight:600}
+/* dreams */
+.drop{border:1.5px dashed var(--line);border-radius:var(--r-card);padding:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;transition:border-color .15s,background-color .15s}
+.drop.over{border-color:var(--ink);background:var(--surface)}
+.drop h3{font-size:22px}
+.gallery{columns:3 280px;column-gap:16px}
+.shot{break-inside:avoid;margin:0 0 16px;position:relative;border-radius:22px;overflow:hidden;background:var(--surface);display:block;width:100%;border:0;padding:0;cursor:zoom-in}
+.shot img{display:block;width:100%;height:auto;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.shot:hover img{transform:scale(1.03)}
+.shot figcaption{position:absolute;left:10px;right:10px;bottom:10px;background:rgba(15,17,16,.62);color:#F1F3F1;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:16px;padding:10px 14px;text-align:left;font-weight:500;overflow-wrap:anywhere}
+.shot.busy{aspect-ratio:4/3;display:grid;place-items:center;color:var(--muted);cursor:default}
+.lightbox img{width:100%;max-height:62vh;object-fit:contain;border-radius:18px;background:var(--surface-2)}
+.vis-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(10,12,11,.45);display:grid;place-items:center;z-index:50;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal{background:var(--surface);border-radius:var(--r-card);padding:24px;width:min(560px,100%);max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.modal-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:6px}
+.switch{display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;user-select:none}
+.switch input{width:18px;height:18px;accent-color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+@media (max-width:980px){
+  .home-grid,.rep-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:820px){
+  .app{grid-template-columns:minmax(0,1fr);padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  .side{position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;min-height:0;border-radius:24px 24px 0 0;z-index:40;
+    padding:8px max(10px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
+  .brand,.side-foot{display:none}
+  .nav{flex-direction:row;justify-content:space-between;gap:2px}
+  .nav .lg{display:none}.nav .sm{display:inline}
+  .nav button{flex:1;flex-direction:column;gap:3px;padding:8px 2px;font-size:11px;border-radius:16px;align-items:center;text-align:center}
+  .kpis{grid-template-columns:minmax(0,1fr)}
+  .two{grid-template-columns:minmax(0,1fr)}
+  .head{padding-top:8px}
+}
+/* boot: smooth cut preloader */
+#boot{position:fixed;inset:0;z-index:100;background:#0F1110;cursor:pointer;clip-path:inset(0 0 0 0);transition:clip-path .95s cubic-bezier(.76,0,.24,1)}
+#boot.out{clip-path:inset(0 0 100% 0)}
+#boot .bc{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;letter-spacing:-.06em;text-transform:uppercase;line-height:.8;overflow:hidden;clip-path:inset(100% 0 0 0);transition:clip-path .9s cubic-bezier(.65,0,.35,1)}
+#boot .bc.on{clip-path:inset(0 0 0 0)}
+#boot .bc.gone{visibility:hidden;transition:visibility 0s 1s}
+#boot .b1{z-index:1;clip-path:none;opacity:0;transition:opacity .7s ease}
+#boot .b1.on{opacity:1}
+#boot .b2{z-index:2}#boot .b3{z-index:3}#boot .b4{z-index:4}
+#boot .bc>span{display:block;transform:scale(1.14) translateY(.06em);filter:blur(10px);opacity:0;transition:transform 1.25s cubic-bezier(.16,1,.3,1),filter 1s ease,opacity .8s ease}
+#boot .bc.on>span{transform:none;filter:none;opacity:1}
+#boot .b1{background:#0F1110;color:#F1F3F1;font-size:min(88vh,80vw)}
+#boot .b2{background:#E7E9E7;color:#101211;font-size:min(21vw,40vh)}
+#boot .b3{background:#BFE3D2;color:#1E4A37;font-size:min(36vw,62vh)}
+#boot .b4{background:#0F1110;color:#F1F3F1}
+#boot .fin{position:relative;font-size:clamp(44px,8.5vw,140px);font-weight:600;text-transform:none;letter-spacing:-.05em;line-height:1;padding-bottom:.16em;opacity:0;transform:translateY(.3em);transition:opacity .9s .25s ease,transform 1.1s .25s cubic-bezier(.16,1,.3,1)}
+#boot .b4.on .fin{opacity:1;transform:none}
+#boot .fin em{font-style:normal;color:#BFE3D2}
+#boot .fin u{position:absolute;left:0;bottom:0;height:.06em;width:100%;background:#BFE3D2;border-radius:99px;transform:scaleX(0);transform-origin:left;transition:transform 1.1s .7s cubic-bezier(.65,0,.35,1)}
+#boot .b4.on .fin u{transform:scaleX(1)}
+#boot .lab{position:absolute;left:max(24px,env(safe-area-inset-left,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));font-style:normal;font-family:var(--f-mono);font-weight:400;font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.55;line-height:1}
+#boot .skip{position:absolute;z-index:10;top:calc(20px + env(safe-area-inset-top,0px));right:max(20px,env(safe-area-inset-right,0px));border:0;border-radius:999px;padding:10px 12px 10px 18px;background:rgba(128,128,128,.22);color:#F1F3F1;mix-blend-mode:difference;font:500 14px/1 var(--f-body);display:flex;align-items:center;gap:8px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer}
+#boot .skip span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#F1F3F1;color:#0F1110;font-size:13px}
+#boot .bprog{position:absolute;z-index:10;left:0;right:0;bottom:0;height:3px;background:rgba(128,128,128,.25)}
+#boot .bprog i{display:block;height:100%;width:100%;background:#BFE3D2;transform:scaleX(0);transform-origin:left;transition:transform 4.6s linear}
+#boot.run .bprog i{transform:scaleX(1)}
+@keyframes rise{from{opacity:.001;transform:translateY(14px)}to{opacity:1;transform:none}}
+.page>*{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+.page>*:nth-child(2){animation-delay:.04s}.page>*:nth-child(3){animation-delay:.08s}.page>*:nth-child(4){animation-delay:.12s}.page>*:nth-child(5){animation-delay:.16s}
+.btn,.icon-btn,.check,.day,.nav button,.seg button{transition:background-color .15s,color .15s,border-color .15s,transform .15s}
+.btn:active,.check:active,.day:active{transform:scale(.97)}
+.habit .done-today{margin-left:auto}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<div id="boot" aria-label="I always win" role="img">
+  <div class="bc b1"><span>I</span><i class="lab">01 / 03</i></div>
+  <div class="bc b2"><span>Always</span><i class="lab">02 / 03</i></div>
+  <div class="bc b3"><span>Win</span><i class="lab">03 / 03</i></div>
+  <div class="bc b4"><div class="fin">I always <em>win</em><u></u></div><i class="lab">щоденна система перемог</i></div>
+  <button type="button" class="skip" id="boot-skip">Пропустити <span>→</span></button>
+  <div class="bprog"><i></i></div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('boot'); if(!el) return;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var timers=[];
+  function finish(){ if(el.classList.contains('out')) return; timers.forEach(clearTimeout); el.classList.add('out'); document.removeEventListener('keydown',onKey); setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 1000); }
+  function onKey(e){ if(e.key==='Escape'||e.key==='Enter'||e.key===' ') finish(); }
+  if(reduce){ el.parentNode.removeChild(el); return; }
+  var cuts=el.querySelectorAll('.bc');
+  requestAnimationFrame(function(){ el.classList.add('run'); });
+  [100,1050,2000,2950].forEach(function(ms,i){ timers.push(setTimeout(function(){ cuts[i].classList.add('on'); if(i>1) cuts[i-2].classList.add('gone'); }, ms)); });
+  timers.push(setTimeout(finish, 4700));
+  document.getElementById('boot-skip').addEventListener('click', function(e){ e.stopPropagation(); finish(); });
+  el.addEventListener('click', finish);
+  document.addEventListener('keydown', onKey);
+})();
+</script>
+<div id="root"></div>
+
+<script src="/vendor/react.production.min.js"></script>
+<script src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/htm.umd.js"></script>
+<script>
+const {useState,useEffect,useMemo,useRef,useLayoutEffect} = React;
+const html = htm.bind(React.createElement);
+
+/* ---------- dates & formatting ---------- */
+const MONTHS = ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+const MONTHS_GEN = ['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
+const MONTHS_SHORT = ['січ','лют','бер','кві','тра','чер','лип','сер','вер','жов','лис','гру'];
+const WD = ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
+const WD_FULL = ['неділя','понеділок','вівторок','середа','четвер','пʼятниця','субота'];
+const pad = n => String(n).padStart(2,'0');
+const keyOf = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parseKey = k => { const [y,m,d] = k.split('-').map(Number); return new Date(y,m-1,d); };
+const todayKey = () => keyOf(new Date());
+const daysBetween = (a,b) => Math.round((parseKey(b)-parseKey(a))/864e5);
+const addDays = (k,n) => { const d = parseKey(k); d.setDate(d.getDate()+n); return keyOf(d); };
+const human = k => { const d = parseKey(k); return d.getDate()+' '+MONTHS_GEN[d.getMonth()]+' '+d.getFullYear(); };
+const humanShort = k => { const d = parseKey(k); return d.getDate()+' '+MONTHS_GEN[d.getMonth()]; };
+function span(since, to){
+  const a=parseKey(since), b=parseKey(to); if(b<a) return '';
+  let y=b.getFullYear()-a.getFullYear(), m=b.getMonth()-a.getMonth(), d=b.getDate()-a.getDate();
+  if(d<0){ m--; d+=new Date(b.getFullYear(), b.getMonth(), 0).getDate(); }
+  if(m<0){ y--; m+=12; }
+  const parts=[]; if(y) parts.push(y+' '+plural(y,'рік','роки','років')); if(m) parts.push(m+' '+plural(m,'місяць','місяці','місяців')); if(d||!parts.length) parts.push(d+' '+plural(d,'день','дні','днів'));
+  return parts.join(' ');
+}
+function plural(n, one, few, many){ const a=Math.abs(n)%100, b=a%10; if(a>10&&a<20) return many; if(b===1) return one; if(b>=2&&b<=4) return few; return many; }
+const dayWord = n => plural(n,'день','дні','днів');
+const nf = new Intl.NumberFormat('uk-UA',{maximumFractionDigits:2});
+const money = n => nf.format(Math.round(n*100)/100)+' ₴';
+const newId = () => Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
+
+/* ---------- store: localStorage cache + private per-person cloud copy ---------- */
+const SECTIONS = ['habits','checks','plans','notes','noteGroups','finance','goals','dreams'];
+const DEFAULT_CATS = [
+  {id:'c-food',name:'Їжа',emoji:'🍔',type:'expense'},
+  {id:'c-shop',name:'Продукти',emoji:'🛒',type:'expense'},
+  {id:'c-taxi',name:'Транспорт',emoji:'🚕',type:'expense'},
+  {id:'c-home',name:'Житло',emoji:'🏠',type:'expense'},
+  {id:'c-fun',name:'Розваги',emoji:'🎬',type:'expense'},
+  {id:'c-health',name:'Здоровʼя',emoji:'💊',type:'expense'},
+  {id:'c-salary',name:'Зарплата',emoji:'💼',type:'income'},
+  {id:'c-side',name:'Підробіток',emoji:'💡',type:'income'}
+];
+const DEFAULTS = {habits:[],checks:{},plans:{},notes:[],finance:{cats:DEFAULT_CATS,tx:[]},goals:[],dreams:[],noteGroups:[]};
+const LS = 'iaw:';
+function lsGet(k){ try{ const s=localStorage.getItem(LS+k); return s?JSON.parse(s):undefined; }catch(e){ return undefined; } }
+function lsSet(k,v){ try{ localStorage.setItem(LS+k,JSON.stringify(v)); }catch(e){} }
+const clone = v => JSON.parse(JSON.stringify(v));
+
+const store = {state:{}, listeners:new Set(), sync:'local', dirty:{}, timers:{}, writing:{}, again:{}, refs:{}};
+store.at = {};
+SECTIONS.forEach(s => { const v = lsGet(s); store.state[s] = v===undefined ? clone(DEFAULTS[s]) : v; store.at[s] = lsGet('at:'+s) || 0; });
+function emit(){ store.listeners.forEach(f=>f()); }
+function setSection(sec, updater){
+  const next = typeof updater==='function' ? updater(store.state[sec]) : updater;
+  store.state = {...store.state, [sec]:next};
+  store.at[sec] = Date.now(); lsSet(sec,next); lsSet('at:'+sec, store.at[sec]);
+  if(store.refs[sec]){
+    store.dirty[sec] = true;
+    clearTimeout(store.timers[sec]);
+    store.timers[sec] = setTimeout(()=>flush(sec), 600);
+  }
+  emit();
+}
+async function flush(sec){
+  if(store.writing[sec]){ store.again[sec]=true; return; }
+  store.writing[sec] = true;
+  try{
+    await store.refs[sec].set({v:store.state[sec], at:store.at[sec]||Date.now()});
+    if(store.sync!=='synced'){ store.sync='synced'; emit(); }
+  }catch(e){
+    store.sync = e && e.code==='quota_exceeded' ? 'full' : 'error'; emit();
+  }
+  store.writing[sec] = false;
+  if(store.again[sec]){ store.again[sec]=false; flush(sec); } else store.dirty[sec]=false;
+}
+async function initSync(){
+  if(!window.claude || typeof window.claude.use!=='function') return;
+  store.sync='connecting'; emit();
+  window.claude.use('assets').then(a=>{ store.assets=a; emit(); }).catch(()=>{});
+  try{
+    const [user, db] = await Promise.all([window.claude.use('user'), window.claude.use('db')]);
+    const uid = user ? await user.id() : null;
+    if(!db || !uid){ store.sync='local'; emit(); return; }
+    const seen = {}; let confirmed = 0;
+    const timer = setTimeout(()=>{ if(confirmed<SECTIONS.length){ store.sync='offline'; emit(); } }, 10000);
+    SECTIONS.forEach(sec => {
+      const ref = db.doc('data/users/'+uid+'/'+sec);
+      store.refs[sec] = ref;
+      ref.onSnapshot(snap => {
+        if(!snap.metadata.fromCache && !seen[sec]){
+          seen[sec]=true; confirmed++;
+          if(confirmed===SECTIONS.length){ clearTimeout(timer); store.sync='synced'; emit(); }
+        }
+        if(store.dirty[sec] || snap.metadata.hasPendingWrites) return;
+        if(snap.exists){
+          const d = snap.data();
+          if(d && 'v' in d && (d.at||0) >= (store.at[sec]||0)){ const v = clone(d.v); store.state = {...store.state,[sec]:v}; store.at[sec]=d.at||0; lsSet(sec,v); lsSet('at:'+sec,store.at[sec]); emit(); }
+          else if(d && (d.at||0) < (store.at[sec]||0) && !snap.metadata.fromCache){ store.dirty[sec]=true; flush(sec); }
+        } else if(!snap.metadata.fromCache && JSON.stringify(store.state[sec])!==JSON.stringify(DEFAULTS[sec])){
+          store.dirty[sec]=true; flush(sec);   // first visit: move this browser's data to the cloud copy
+        }
+      }, () => { clearTimeout(timer); store.sync='error'; emit(); });
+    });
+  }catch(e){ store.sync='local'; emit(); }
+}
+function useStore(){
+  const [,force] = useState(0);
+  useEffect(()=>{ const f=()=>force(x=>x+1); store.listeners.add(f); return ()=>store.listeners.delete(f); },[]);
+  return store.state;
+}
+
+/* ---------- icons ---------- */
+const sv = (d,extra) => html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}${extra||''}</svg>`;
+const I = {
+  home: () => sv(html`<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/>`),
+  habit: () => sv(html`<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-3.7 2.5-5 .3 1.8 1.2 2.6 2 3 .2-3-.5-5.5.5-8z"/>`),
+  note: () => sv(html`<rect x="5" y="3.5" width="14" height="17" rx="3"/><path d="M9 8.5h6M9 12h6M9 15.5h3.5"/>`),
+  money: () => sv(html`<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1.2"/>`),
+  goal: () => sv(html`<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8" fill="currentColor"/>`),
+  arrow: () => sv(html`<path d="M7 17 17 7M9 7h8v8"/>`),
+  plus: () => sv(html`<path d="M12 5v14M5 12h14"/>`),
+  left: () => sv(html`<path d="m14.5 6-6 6 6 6"/>`),
+  down: () => sv(html`<path d="m6 9.5 6 6 6-6"/>`),
+  right: () => sv(html`<path d="m9.5 6 6 6-6 6"/>`),
+  check: () => sv(html`<path d="m5 12.5 4.5 4.5L19 7.5"/>`),
+  edit: () => sv(html`<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/>`),
+  trash: () => sv(html`<path d="M4.5 7h15M10 11v6M14 11v6M6.5 7l1 12.5h9l1-12.5M9.5 7V4.5h5V7"/>`),
+  close: () => sv(html`<path d="M6 6l12 12M18 6 6 18"/>`),
+  star: () => sv(html`<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"/>`),
+  folder: () => sv(html`<path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/>`),
+  gear: () => sv(html`<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>`),
+  pin: () => sv(html`<path d="M9 4h6l-1 6 3 3H7l3-3-1-6zM12 13v7"/>`)
+};
+
+/* ---------- shared UI ---------- */
+function Btn({onClick, children, kind, arrow, type, disabled, id}){
+  if(arrow) return html`<button id=${id} type=${type||'button'} class="btn" onClick=${onClick} disabled=${disabled}>${children}<span class="ar">${I.arrow()}</span></button>`;
+  return html`<button id=${id} type=${type||'button'} class=${'btn '+(kind||'plain')} onClick=${onClick} disabled=${disabled}>${children}</button>`;
+}
+function DeleteBtn({onConfirm, label}){
+  return html`<button type="button" class="btn danger" onClick=${onConfirm}>${label||'Видалити'}</button>`;
+}
+function finishToast(){ const t=store.toast; store.toast=null; clearTimeout(store.toastT); if(t&&t.onExpire) t.onExpire(); }
+function undoable(text, sec, updater, onExpire){
+  finishToast();
+  const prev = store.state[sec];
+  setSection(sec, updater);
+  store.toast = {text, onExpire, undo:()=>{ store.toast=null; clearTimeout(store.toastT); setSection(sec, prev); }};
+  store.toastT = setTimeout(()=>{ finishToast(); emit(); }, 6000);
+  emit();
+}
+function Toast(){
+  const t = store.toast; if(!t) return null;
+  return html`<div class="toast" role="status"><span>${t.text}</span><button type="button" onClick=${t.undo}>Повернути</button></div>`;
+}
+function Modal({title, onClose, children, foot}){
+  useEffect(()=>{ const f=e=>{ if(e.key==='Escape') onClose(); }; window.addEventListener('keydown',f); return ()=>window.removeEventListener('keydown',f); },[onClose]);
+  return html`<div class="overlay" onMouseDown=${e=>{ if(e.target===e.currentTarget) onClose(); }}>
+    <div class="modal" role="dialog" aria-modal="true" aria-label=${title}>
+      <div class="row" style=${{justifyContent:'space-between'}}><h2>${title}</h2><button class="icon-btn quiet" aria-label="Закрити" onClick=${onClose}>${I.close()}</button></div>
+      ${children}
+      ${foot && html`<div class="modal-foot">${foot}</div>`}
+    </div></div>`;
+}
+function Head({eyebrow, title, sub, right}){
+  return html`<header class="head"><div style=${{minWidth:0}}><div class="eyebrow">${eyebrow}</div><h1>${title}${sub && html` <em>${sub}</em>`}</h1></div>${right && html`<div class="row">${right}</div>`}</header>`;
+}
+const EMOJIS = ['🔥','💪','🏃','🧘','📚','💧','🥗','😴','🧠','✍️','🚭','🎯','🍔','🛒','☕','🚕','⛽','🏠','💡','📱','🎬','🎮','👕','💊','🏋️','✈️','🎁','🐶','💼','💰','📈','🧾','💳','🍷','🎓','🛠️'];
+function EmojiField({value, onChange, id}){
+  return html`<div class="field" style=${{display:'flex',flexDirection:'column',gap:'8px'}}>
+    <div class="row"><span class="muted small">Емодзі</span><input id=${id} type="text" value=${value} maxLength="4" onInput=${e=>onChange(e.target.value)} style=${{width:'70px',textAlign:'center',fontSize:'20px',padding:'6px'}} aria-label="Емодзі"/><span class="muted small">або оберіть:</span></div>
+    <div class="emoji-picks">${EMOJIS.map(e=>html`<button type="button" key=${e} aria-pressed=${value===e} onClick=${()=>onChange(e)}>${e}</button>`)}</div>
+  </div>`;
+}
+
+/* ---------- Home: plans for the day ---------- */
+function habitsForDay(habits, k){ return habits.filter(h => h.kind!=='bad' && h.daily!==false && (!h.since || h.since<=k)); }
+
+const lsUi = () => lsGet('ui:folded') || {};
+function Fold({id, title, extra, children, folded, onToggle}){
+  return html`<section class=${'card'+(folded?' folded':'')}>
+    <div class="card-head"><button class="fold" aria-expanded=${!folded} aria-controls=${'fold-'+id} onClick=${onToggle}><span class="chev">${I.down()}</span><h2>${title}</h2></button>${extra}</div>
+    <div id=${'fold-'+id} hidden=${folded}>${children}</div>
+  </section>`;
+}
+function Home({s}){
+  const [folded,setFolded] = useState(lsUi);
+  const toggle = k => setFolded(f => { const n={...f,[k]:!f[k]}; lsSet('ui:folded',n); return n; });
+  const tk = todayKey();
+  const [sel,setSel] = useState(tk);
+  const [ym,setYm] = useState(()=>{ const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()}; });
+  const [txt,setTxt] = useState(''); const [tm,setTm] = useState('');
+  const [hTxt,setHTxt] = useState('');
+  const [editing,setEditing] = useState(null);
+  const stripRef = useRef(null);
+
+  const daysInMonth = new Date(ym.y, ym.m+1, 0).getDate();
+  const days = Array.from({length:daysInMonth},(_,i)=>keyOf(new Date(ym.y,ym.m,i+1)));
+  useEffect(()=>{ const el = stripRef.current && stripRef.current.querySelector('.sel'); if(el) el.scrollIntoView({inline:'center',block:'nearest'}); },[sel,ym.y,ym.m]);
+
+  const moveMonth = n => { const d=new Date(ym.y, ym.m+n, 1); setYm({y:d.getFullYear(),m:d.getMonth()}); const keep=Math.min(parseKey(sel).getDate(), new Date(d.getFullYear(),d.getMonth()+1,0).getDate()); setSel(keyOf(new Date(d.getFullYear(),d.getMonth(),keep))); };
+  const goToday = () => { const d=new Date(); setYm({y:d.getFullYear(),m:d.getMonth()}); setSel(tk); };
+
+  const dayHabits = habitsForDay(s.habits, sel);
+  const checks = s.checks[sel] || {};
+  const tasks = (s.plans[sel] || []).slice().sort((a,b)=> (a.time||'99')<(b.time||'99')?-1:(a.time||'99')>(b.time||'99')?1:0);
+  const total = dayHabits.length + tasks.length;
+  const done = dayHabits.filter(h=>checks[h.id]).length + tasks.filter(t=>t.done).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+
+  const toggleHabit = id => setSection('checks', c => { const day = {...(c[sel]||{})}; if(day[id]) delete day[id]; else day[id]=true; const n={...c}; if(Object.keys(day).length) n[sel]=day; else delete n[sel]; return n; });
+  const setTasks = fn => setSection('plans', p => { const n={...p}; const list = fn(p[sel]||[]); if(list.length) n[sel]=list; else delete n[sel]; return n; });
+  const addTask = e => { e.preventDefault(); const t=txt.trim(); if(!t) return; setTasks(l=>[...l,{id:newId(),text:t,time:tm,done:false}]); setTxt(''); setTm(''); };
+  const addHabit = e => { e.preventDefault(); const t=hTxt.trim(); if(!t) return; setSection('habits', h=>[...h,{id:newId(),name:t,emoji:'🔥',since:sel<tk?sel:tk,daily:true,note:''}]); setHTxt(''); };
+
+  const d = parseKey(sel);
+  const rel = sel===tk ? 'сьогодні' : sel===addDays(tk,1) ? 'завтра' : sel===addDays(tk,-1) ? 'вчора' : WD_FULL[d.getDay()];
+
+  return html`<${React.Fragment}>
+    <${Head} eyebrow=${'Плани на день · '+rel} title=${d.getDate()+' '+MONTHS_GEN[d.getMonth()]} sub=${WD_FULL[d.getDay()]}
+      right=${html`<div class="monthbar">
+        <div class="monthpill"><button class="icon-btn quiet" aria-label="Попередній місяць" onClick=${()=>moveMonth(-1)}>${I.left()}</button><b>${MONTHS[ym.m]} ${ym.y}</b><button class="icon-btn quiet" aria-label="Наступний місяць" onClick=${()=>moveMonth(1)}>${I.right()}</button></div>
+        ${sel!==tk && html`<${Btn} kind="ghost" onClick=${goToday}>Сьогодні</${Btn}>`}
+      </div>`}/>
+    <div class="days" ref=${stripRef} role="listbox" aria-label="Дні місяця">
+      ${days.map(k=>{ const dd=parseKey(k); const wd=dd.getDay(); const has=(s.plans[k]||[]).length>0;
+        return html`<button key=${k} role="option" aria-selected=${k===sel} class=${'day'+(k===sel?' sel':'')+(k===tk?' today':'')+(wd===0||wd===6?' weekend':'')} onClick=${()=>setSel(k)}>
+          <small>${WD[wd]}</small><b>${dd.getDate()}</b><span class=${'dot'+(has?'':' none')}></span></button>`; })}
+    </div>
+    <section class="card progress">
+      <div class="big num">${pct}%</div>
+      <div class="grow" style=${{display:'flex',flexDirection:'column',gap:'8px'}}>
+        <div class="row" style=${{justifyContent:'space-between'}}><b>Виконано ${done} з ${total}</b><span class="muted small">${dayHabits.length} ${plural(dayHabits.length,'звичка','звички','звичок')} · ${tasks.length} ${plural(tasks.length,'справа','справи','справ')}</span></div>
+        <div class="bar"><i style=${{width:pct+'%'}}></i></div>
+      </div>
+    </section>
+    <div class="home-grid">
+      <${Fold} id="habits" title="Щоденні звички" folded=${!!folded.habits} onToggle=${()=>toggle('habits')} extra=${html`<span class="tag mint">${dayHabits.filter(h=>checks[h.id]).length} з ${dayHabits.length} · щодня</span>`}>
+        <div class="list">
+          ${dayHabits.length===0 && html`<div class="empty">Тут зʼявляться звички, які мають бути щодня. Додайте першу нижче або на сторінці «Звички».</div>`}
+          ${dayHabits.map(h=>html`<div key=${h.id} class=${'item'+(checks[h.id]?' done':'')}>
+            <button class=${'check'+(checks[h.id]?' on':'')} aria-label=${'Позначити: '+h.name} aria-pressed=${!!checks[h.id]} onClick=${()=>toggleHabit(h.id)}>${I.check()}</button>
+            <span class="txt">${h.name}</span>
+            ${h.since && html`<span class="muted small num">${daysBetween(h.since, sel)} ${dayWord(daysBetween(h.since, sel))}</span>`}
+          </div>`)}
+        </div>
+        <form class="addrow" onSubmit=${addHabit}><input id="new-habit-home" type="text" placeholder="Нова щоденна звичка" value=${hTxt} onInput=${e=>setHTxt(e.target.value)}/><${Btn} type="submit" kind="ghost">Додати</${Btn}></form>
+      </${Fold}>
+      <${Fold} id="tasks" title="Мої справи" folded=${!!folded.tasks} onToggle=${()=>toggle('tasks')} extra=${html`<span class="muted small">${tasks.filter(t=>t.done).length} з ${tasks.length} · ${humanShort(sel)}</span>`}>
+        <div class="list">
+          ${tasks.length===0 && html`<div class="empty">На цей день справ ще немає. Запишіть, що треба зробити, і за бажанням вкажіть час.</div>`}
+          ${tasks.map(t=> editing===t.id
+            ? html`<${TaskEdit} key=${t.id} t=${t} onSave=${v=>{ setTasks(l=>l.map(x=>x.id===t.id?{...x,...v}:x)); setEditing(null); }} onCancel=${()=>setEditing(null)}/>`
+            : html`<div key=${t.id} class=${'item'+(t.done?' done':'')}>
+              <button class=${'check'+(t.done?' on':'')} aria-label=${'Виконано: '+t.text} aria-pressed=${t.done} onClick=${()=>setTasks(l=>l.map(x=>x.id===t.id?{...x,done:!x.done}:x))}>${I.check()}</button>
+              ${t.time && html`<span class="time">${t.time}</span>`}
+              <span class="txt">${t.text}</span>
+              <button class="icon-btn quiet" aria-label="Редагувати" onClick=${()=>setEditing(t.id)}>${I.edit()}</button>
+              <button class="icon-btn quiet" aria-label="Видалити" onClick=${()=>undoable('Справу видалено','plans', p=>{ const n={...p}; const l=(p[sel]||[]).filter(x=>x.id!==t.id); if(l.length) n[sel]=l; else delete n[sel]; return n; })}>${I.trash()}</button>
+            </div>`)}
+        </div>
+        <form class="addrow" onSubmit=${addTask}>
+          <input id="new-task" type="text" placeholder="Що потрібно зробити?" value=${txt} onInput=${e=>setTxt(e.target.value)}/>
+          <input id="new-task-time" type="time" value=${tm} onInput=${e=>setTm(e.target.value)} aria-label="Час"/>
+          <${Btn} type="submit" arrow>Додати</${Btn}>
+        </form>
+      </${Fold}>
+    </div>
+  </${React.Fragment}>`;
+}
+function TaskEdit({t, onSave, onCancel}){
+  const [text,setText] = useState(t.text); const [time,setTime] = useState(t.time||'');
+  return html`<form class="item addrow" style=${{marginTop:0}} onSubmit=${e=>{e.preventDefault(); if(text.trim()) onSave({text:text.trim(),time});}}>
+    <input id=${'edit-'+t.id} type="text" value=${text} onInput=${e=>setText(e.target.value)} autoFocus/>
+    <input id=${'edit-time-'+t.id} type="time" value=${time} onInput=${e=>setTime(e.target.value)} aria-label="Час"/>
+    <${Btn} type="submit">Зберегти</${Btn}><${Btn} kind="ghost" onClick=${onCancel}>Скасувати</${Btn}>
+  </form>`;
+}
+
+/* ---------- Habits ---------- */
+function Habits({s}){
+  const [form,setForm] = useState(null);
+  const [kind,setKindRaw] = useState(()=>lsGet('ui:habitKind')==='bad'?'bad':'good');
+  const setKind = k => { setKindRaw(k); lsSet('ui:habitKind',k); };
+  const tk = todayKey();
+  const save = h => { setSection('habits', list => list.some(x=>x.id===h.id) ? list.map(x=>x.id===h.id?h:x) : [...list,h]); if(h.kind!==kind) setKind(h.kind); setForm(null); };
+  const remove = id => { undoable('Звичку видалено','habits', list=>list.filter(x=>x.id!==id)); setForm(null); };
+  const toggleToday = id => setSection('checks', c => { const day={...(c[tk]||{})}; if(day[id]) delete day[id]; else day[id]=true; const n={...c}; if(Object.keys(day).length) n[tk]=day; else delete n[tk]; return n; });
+  const relapse = h => undoable('Лічильник «'+h.name+'» почато заново','habits', list=>list.map(x=>{ if(x.id!==h.id) return x; const run=Math.max(0,daysBetween(x.since||tk,tk)); return {...x, since:tk, best:Math.max(x.best||0,run), relapses:(x.relapses||0)+1}; }));
+  const isBad = h => h.kind==='bad';
+  const good = s.habits.filter(h=>!isBad(h)), bad = s.habits.filter(isBad);
+  const list = (kind==='bad'?bad:good).slice().sort((a,b)=>(a.since||'').localeCompare(b.since||''));
+  const blank = () => ({id:newId(),name:'',emoji:'',since:tk,daily:kind!=='bad',note:'',kind});
+  return html`<${React.Fragment}>
+    <${Head} eyebrow=${good.length+' '+plural(good.length,'хороша','хороші','хороших')+' · '+bad.length+' '+plural(bad.length,'погана','погані','поганих')} title="Звички" sub=${kind==='bad'?'від яких я відмовився':'відколи я тримаюсь'}
+      right=${html`<${Btn} arrow onClick=${()=>setForm(blank())}>${kind==='bad'?'Кинути звичку':'Нова звичка'}</${Btn}>`}/>
+    <div class="seg kindseg" role="group" aria-label="Тип звичок" style=${{alignSelf:'flex-start'}}>
+      <button aria-pressed=${kind==='good'} onClick=${()=>setKind('good')}>Хороші <span class="cnt num">${good.length}</span></button>
+      <button aria-pressed=${kind==='bad'} onClick=${()=>setKind('bad')}>Погані <span class="cnt num">${bad.length}</span></button>
+    </div>
+    ${list.length===0 && (kind==='good'
+      ? html`<section class="card"><h2>Поки що жодної хорошої звички</h2><p class="muted">Додайте звичку і дату, з якої ви почали. Тут буде видно, скільки часу ви її тримаєте, а щоденні звички автоматично зʼявляться в плані кожного дня на головній.</p><${Btn} arrow onClick=${()=>setForm(blank())}>Додати першу звичку</${Btn}></section>`
+      : html`<section class="card"><h2>Від чого ви відмовляєтесь?</h2><p class="muted">Додайте погану звичку і дату, коли ви її кинули: цигарки, солодке, соцмережі вночі. Лічильник покаже, скільки днів ви без неї. Якщо зірвались, натисніть «Зірвався», і рахунок почнеться заново, а рекорд збережеться.</p><${Btn} arrow onClick=${()=>setForm(blank())}>Додати погану звичку</${Btn}></section>`)}
+    <div class="grid-cards">
+      ${list.map(h=>{
+        const n = h.since ? daysBetween(h.since, tk) : 0;
+        const started = n>=0;
+        if(isBad(h)){
+          const best = Math.max(h.best||0, started?n:0);
+          return html`<article key=${h.id} class="card habit bad">
+            <div class="top"><div style=${{minWidth:0}}><div class="eyebrow-s">Без</div><h3>${h.name}</h3><div class="small sub">${h.since ? 'з '+human(h.since) : 'без дати'}</div></div>
+              <button class="icon-btn quiet" aria-label="Редагувати" onClick=${()=>setForm({...h})}>${I.edit()}</button></div>
+            <div class="count num">${started ? n : 0}<small>${dayWord(started?n:0)} без</small></div>
+            ${started && h.since && html`<div class="span-line">Тримаюсь: <b>${span(h.since, tk)}</b></div>`}
+            <div class="row" style=${{justifyContent:'space-between'}}>
+              <span class="small sub">Рекорд: <b class="num">${best}</b> ${dayWord(best)}${h.relapses ? ' · зривів: '+h.relapses : ''}</span>
+              <button class="btn relapse" onClick=${()=>relapse(h)}>Зірвався</button>
+            </div>
+          </article>`;
+        }
+        return html`<article key=${h.id} class="card habit">
+          <div class="top"><div style=${{minWidth:0}}><h3>${h.name}</h3><div class="muted small">${h.since ? 'з '+human(h.since) : 'без дати'}</div></div>
+            <div class="row" style=${{flexWrap:'nowrap'}}>${started && html`<button class=${'check'+(s.checks[tk]&&s.checks[tk][h.id]?' on':'')} title="Виконано сьогодні" aria-label=${'Виконано сьогодні: '+h.name} aria-pressed=${!!(s.checks[tk]&&s.checks[tk][h.id])} onClick=${()=>toggleToday(h.id)}>${I.check()}</button>`}<button class="icon-btn quiet" aria-label="Редагувати" onClick=${()=>setForm({...h})}>${I.edit()}</button></div></div>
+          <div class="count num">${started ? n : -n}<small>${started ? dayWord(n) : dayWord(-n)+' до старту'}</small></div>
+          ${h.note && html`<p class="muted small" style=${{margin:0,whiteSpace:'pre-wrap'}}>${h.note}</p>`}
+          ${started && h.since && html`<div class="span-line">Триває: <b>${span(h.since, tk)}</b></div>`}
+        </article>`; })}
+    </div>
+    ${form && html`<${HabitForm} h=${form} isNew=${!s.habits.some(x=>x.id===form.id)} onSave=${save} onDelete=${()=>remove(form.id)} onClose=${()=>setForm(null)}/>`}
+  </${React.Fragment}>`;
+}
+function HabitForm({h, isNew, onSave, onDelete, onClose}){
+  const [v,setV] = useState({kind:'good',...h});
+  const up = (k,x) => setV(o=>({...o,[k]:x}));
+  const bad = v.kind==='bad';
+  return html`<${Modal} title=${isNew?(bad?'Погана звичка':'Нова звичка'):'Редагувати звичку'} onClose=${onClose}
+    foot=${html`${!isNew ? html`<${DeleteBtn} onConfirm=${onDelete}/>` : html`<span></span>`}<div class="row"><${Btn} kind="ghost" onClick=${onClose}>Скасувати</${Btn}><${Btn} arrow disabled=${!v.name.trim()} onClick=${()=>onSave({...v,name:v.name.trim(),daily:bad?false:v.daily})}>Зберегти</${Btn}></div>`}>
+    <div class="seg" role="group" aria-label="Тип"><button aria-pressed=${!bad} onClick=${()=>up('kind','good')}>Хороша</button><button aria-pressed=${bad} onClick=${()=>up('kind','bad')}>Погана</button></div>
+    <label class="field">${bad?'Від чого відмовляюсь':'Назва'}<input id="habit-name" type="text" value=${v.name} placeholder=${bad?'Наприклад: Цигарки':'Наприклад: Тренування 30 хв'} onInput=${e=>up('name',e.target.value)} autoFocus/></label>
+    <label class="field">${bad?'Коли кинув':'Відколи (дата початку)'}<input id="habit-since" type="date" value=${v.since} onInput=${e=>up('since',e.target.value)}/></label>
+    <label class="field">Нотатка<input id="habit-note" type="text" value=${v.note||''} placeholder="Навіщо мені це" onInput=${e=>up('note',e.target.value)}/></label>
+    ${!bad && html`<label class="switch"><input id="habit-daily" type="checkbox" checked=${v.daily!==false} onChange=${e=>up('daily',e.target.checked)}/>Додавати в план кожного дня</label>`}
+  </${Modal}>`;
+}
+
+/* ---------- Notes ---------- */
+const noteText = n => [n.title, n.body].filter(Boolean).join('\n');
+const BOOK_COLORS = [
+  {k:'ink',name:'Графіт',bg:'#171A19',fg:'#F2F4F2'},
+  {k:'mint',name:'Мʼята',bg:'#A9D7C1',fg:'#122219'},
+  {k:'sand',name:'Пісок',bg:'#E3D5B8',fg:'#24201A'},
+  {k:'clay',name:'Глина',bg:'#C2613F',fg:'#FFF4EE'},
+  {k:'olive',name:'Олива',bg:'#5D6A43',fg:'#F1F3E8'},
+  {k:'ocean',name:'Океан',bg:'#2C4A63',fg:'#EDF3F8'},
+  {k:'plum',name:'Слива',bg:'#6A3D56',fg:'#F8EEF3'},
+  {k:'stone',name:'Камінь',bg:'#BCC1BB',fg:'#161817'}
+];
+const bookColor = g => BOOK_COLORS.find(c=>c.k===g.color) || BOOK_COLORS[[...(g.id||'')].reduce((a,ch)=>a+ch.charCodeAt(0),0)%BOOK_COLORS.length];
+const bookStyle = g => { const c=bookColor(g); return {'--bc':c.bg,'--bf':c.fg}; };
+function BookFace({g,no,n}){
+  const lw = Math.max(0,...String(g.name||'').split(/\s+/).map(w=>w.length));
+  return html`<${React.Fragment}><span class="pages"></span><span class="cover" style=${bookStyle(g)}>
+    <span class="bno num">№ ${String(no).padStart(2,'0')}</span>
+    <span class=${'bt'+(lw>11?' xs':lw>8?' sm':'')}>${g.name||'Без назви'}</span>
+    <span class="brule"></span>
+    <span class="bfoot">${n} ${plural(n,'запис','записи','записів')}</span>
+  </span></${React.Fragment}>`;
+}
+function Shelf({groups,count,onOpen,onAdd,onReorder}){
+  const [order,setOrder] = useState(null);
+  const [dragId,setDragId] = useState(null);
+  const S = useRef({}); const wrap = useRef(null);
+  const byId = Object.fromEntries(groups.map(g=>[g.id,g]));
+  const ids = (order||groups.map(g=>g.id)).filter(id=>byId[id]);
+  const place = () => { const s=S.current; if(!s.active||!wrap.current) return; const el=wrap.current.querySelector('[data-book="'+s.id+'"]'); if(!el) return;
+    const w=wrap.current.getBoundingClientRect(); el.style.transform='translate('+(s.px-w.left-s.gx-el.offsetLeft)+'px,'+(s.py-w.top-s.gy-el.offsetTop)+'px) rotate(-2deg) scale(1.04)'; };
+  useLayoutEffect(place);
+  const reset = () => { const s=S.current; clearTimeout(s.t); if(wrap.current) wrap.current.querySelectorAll('[data-book]').forEach(e=>e.style.transform=''); S.current={justDragged:s.active&&s.moved}; setDragId(null); setOrder(null); };
+  const start = () => { const s=S.current; if(s.active||!s.id||!s.el) return; const r=s.el.getBoundingClientRect(); s.gx=s.x0-r.left; s.gy=s.y0-r.top; s.px=s.x0; s.py=s.y0; s.active=true; s.order=groups.map(g=>g.id); setOrder(s.order); setDragId(s.id); try{ navigator.vibrate && navigator.vibrate(12); }catch(e){} };
+  useEffect(()=>{
+    const tm = e => { if(S.current.active) e.preventDefault(); };
+    const mv = e => { const s=S.current; if(!s.id || e.pointerId!==s.pid) return;
+      if(!s.active){ if(Math.hypot(e.clientX-s.x0,e.clientY-s.y0)<8) return; if(e.pointerType==='mouse') start(); else { clearTimeout(s.t); S.current={}; return; } }
+      s.moved=true; s.px=e.clientX; s.py=e.clientY;
+      const t=document.elementsFromPoint(e.clientX,e.clientY).map(n=>n.closest&&n.closest('[data-book]')).find(n=>n && n.dataset.book!==s.id);
+      if(t){ const from=s.order.indexOf(s.id), to=s.order.indexOf(t.dataset.book); if(to>-1 && from!==to){ const o=s.order.filter(x=>x!==s.id); o.splice(to,0,s.id); s.order=o; setOrder(o); return; } }
+      place(); };
+    const up = e => { const s=S.current; if(!s.id || e.pointerId!==s.pid) return; if(s.active && s.moved && s.order.join()!==groups.map(g=>g.id).join()) onReorder(s.order); reset(); setTimeout(()=>{ S.current.justDragged=false; },0); };
+    const cancel = e => { const s=S.current; if(s.id && e.pointerId===s.pid) reset(); };
+    document.addEventListener('touchmove',tm,{passive:false}); window.addEventListener('pointermove',mv); window.addEventListener('pointerup',up); window.addEventListener('pointercancel',cancel);
+    return ()=>{ document.removeEventListener('touchmove',tm); window.removeEventListener('pointermove',mv); window.removeEventListener('pointerup',up); window.removeEventListener('pointercancel',cancel); };
+  },[groups,onReorder]);
+  const down = (e,id) => { if(e.button>0) return; const s={id,pid:e.pointerId,x0:e.clientX,y0:e.clientY,el:e.currentTarget,active:false,moved:false}; S.current=s; if(e.pointerType!=='mouse') s.t=setTimeout(start,320); };
+  const move = (id,dir) => { const o=groups.map(g=>g.id); const i=o.indexOf(id), j=i+dir; if(j<0||j>=o.length) return; [o[i],o[j]]=[o[j],o[i]]; onReorder(o); setTimeout(()=>{ const el=wrap.current && wrap.current.querySelector('[data-book="'+id+'"]'); el && el.focus(); },30); };
+  return html`<div class=${'shelf'+(dragId?' sorting':'')} ref=${wrap}>
+    ${ids.map((id,i)=>{ const g=byId[id]; return html`<button key=${id} data-book=${id} class=${'book'+(dragId===id?' dragging':'')} aria-label=${g.name+', '+count(id)+' '+plural(count(id),'запис','записи','записів')+'. Alt + стрілка, щоб перемістити'}
+      onPointerDown=${e=>down(e,id)} onContextMenu=${e=>e.preventDefault()} onClick=${()=>{ if(S.current.justDragged||S.current.active) return; onOpen(id); }}
+      onKeyDown=${e=>{ if(e.altKey && (e.key==='ArrowLeft'||e.key==='ArrowRight')){ e.preventDefault(); move(id,e.key==='ArrowLeft'?-1:1); } }}>
+      <${BookFace} g=${g} no=${i+1} n=${count(id)}/>
+    </button>`; })}
+    <button class="book add" onClick=${onAdd}><span class="cover"><span class="plus">${I.plus()}</span><b>Нова книжка</b></span></button>
+  </div>`;
+}
+function Notes({s}){
+  const [focusId,setFocusId] = useState(null);
+  const [gid,setGidRaw] = useState(()=>lsGet('ui:noteGroup')||null);
+  const [gForm,setGForm] = useState(null);
+  const groups = s.noteGroups;
+  const group = gid ? groups.find(g=>g.id===gid) : null;
+  const openGroup = id => { setGidRaw(id); lsSet('ui:noteGroup', id); window.scrollTo(0,0); };
+  useEffect(()=>{ if(gid && !group) openGroup(null); },[gid, !!group]);
+  const inView = n => group ? n.group===group.id : !n.group || !groups.some(g=>g.id===n.group);
+  const list = s.notes.filter(inView).sort((a,b)=> (b.pinned?1:0)-(a.pinned?1:0) || (b.created||b.updated)-(a.created||a.updated));
+  const add = () => { const now=Date.now(); const n={id:newId(),title:'',body:'',pinned:false,created:now,updated:now,group:group?group.id:null}; setSection('notes', l=>[n,...l]); setFocusId(n.id); };
+  const saveText = (id,text) => setSection('notes', l=>l.map(x=>x.id===id ? {...x,title:'',body:text,updated:Date.now()} : x));
+  const dropEmpty = id => setSection('notes', l=>l.filter(x=>!(x.id===id && !noteText(x).trim())));
+  const togglePin = id => setSection('notes', l=>l.map(x=>x.id===id?{...x,pinned:!x.pinned}:x));
+  const moveTo = (id,g) => { setSection('notes', l=>l.map(x=>x.id===id?{...x,group:g||null}:x)); };
+  const remove = n => { if(!noteText(n).trim()){ dropEmpty(n.id); return; } undoable('Запис видалено','notes', l=>l.filter(x=>x.id!==n.id)); };
+  const saveGroup = g => { setSection('noteGroups', l => l.some(x=>x.id===g.id) ? l.map(x=>x.id===g.id?g:x) : [...l,g]); setGForm(null); };
+  const delGroup = g => { setGForm(null); openGroup(null); undoable('Книжку «'+g.name+'» видалено, її записи перенесено в «Без групи»','noteGroups', l=>l.filter(x=>x.id!==g.id)); };
+  const count = id => s.notes.filter(n=>n.group===id).length;
+  const newGroup = () => { const used=groups.map(g=>bookColor(g).k); const c=BOOK_COLORS.find(x=>!used.includes(x.k))||BOOK_COLORS[groups.length%BOOK_COLORS.length]; setGForm({id:newId(),name:'',color:c.k}); };
+  const reorder = useMemo(()=>o=>setSection('noteGroups', l=>[...o.map(id=>l.find(g=>g.id===id)).filter(Boolean), ...l.filter(g=>!o.includes(g.id))]),[]);
+  const last = id => { const n=s.notes.filter(x=>x.group===id && noteText(x).trim()).sort((a,b)=>b.updated-a.updated)[0]; return n ? noteText(n).split('\n')[0] : ''; };
+  const cards = html`<div class="notes">
+      ${list.map(n=>html`<${NoteCard} key=${n.id} n=${n} groups=${groups} autoFocus=${focusId===n.id} onSave=${t=>saveText(n.id,t)} onBlurEmpty=${()=>dropEmpty(n.id)} onPin=${()=>togglePin(n.id)} onMove=${g=>moveTo(n.id,g)} onDelete=${()=>remove(n)} onFocused=${()=>setFocusId(null)}/>`)}
+    </div>`;
+  if(group) return html`<${React.Fragment}>
+    <header class="head">
+      <div style=${{minWidth:0}}>
+        <button class="crumb" onClick=${()=>openGroup(null)}>${I.left()}<span>Записник</span></button>
+        <h1><span class="bdot" style=${bookStyle(group)}></span>${group.name} <em>${count(group.id)} ${plural(count(group.id),'запис','записи','записів')}</em></h1>
+      </div>
+      <div class="row"><button class="icon-btn" aria-label="Налаштувати книжку" onClick=${()=>setGForm({...group})}>${I.edit()}</button><${Btn} arrow onClick=${add}>Новий запис</${Btn}></div>
+    </header>
+    ${list.length===0 && html`<button class="card note-empty" onClick=${add}><span class="plus">${I.plus()}</span><span><b>У групі «${group.name}» поки порожньо</b><br/><span class="muted">Натисніть, щоб написати перший запис.</span></span></button>`}
+    ${cards}
+    ${gForm && html`<${GroupForm} g=${gForm} isNew=${false} onSave=${saveGroup} onDelete=${()=>delGroup(gForm)} onClose=${()=>setGForm(null)}/>`}
+  </${React.Fragment}>`;
+  return html`<${React.Fragment}>
+    <${Head} eyebrow=${s.notes.length+' '+plural(s.notes.length,'запис','записи','записів')+' · '+groups.length+' '+plural(groups.length,'книжка','книжки','книжок')} title="Записник" sub="щоб нічого не забути"
+      right=${html`<${Btn} kind="ghost" onClick=${newGroup}>+ Книжка</${Btn}><${Btn} arrow onClick=${add}>Новий запис</${Btn}>`}/>
+    ${groups.length>0 && html`<${Shelf} groups=${groups} count=${count} onOpen=${openGroup} onAdd=${newGroup} onReorder=${reorder}/>`}
+    ${groups.length>1 && html`<p class="shelf-hint">Затисніть книжку й перетягніть, щоб поміняти місцями.</p>`}
+    ${groups.length>0 && list.length>0 && html`<div class="eyebrow" style=${{padding:'8px 8px 0'}}>Без групи</div>`}
+    ${s.notes.length===0 && groups.length===0 && html`<button class="card note-empty" onClick=${add}><span class="plus">${I.plus()}</span><span><b>Натисніть, щоб записати</b><br/><span class="muted">Ідеї, номери, списки, думки. Для тем створюйте групи, наприклад «Дизайн» чи «Спорт», і тримайте записи всередині.</span></span></button>`}
+    ${cards}
+    ${gForm && html`<${GroupForm} g=${gForm} isNew=${!groups.some(x=>x.id===gForm.id)} onSave=${g=>{ saveGroup(g); if(!groups.some(x=>x.id===g.id)) openGroup(g.id); }} onDelete=${()=>delGroup(gForm)} onClose=${()=>setGForm(null)}/>`}
+  </${React.Fragment}>`;
+}
+function GroupForm({g,isNew,onSave,onDelete,onClose}){
+  const [v,setV] = useState(g); const up=(k,x)=>setV(o=>({...o,[k]:x}));
+  const ok = v.name.trim();
+  return html`<${Modal} title=${isNew?'Нова книжка':'Книжка'} onClose=${onClose}
+    foot=${html`${!isNew ? html`<${DeleteBtn} label="Видалити книжку" onConfirm=${onDelete}/>` : html`<span></span>`}<div class="row"><${Btn} kind="ghost" onClick=${onClose}>Скасувати</${Btn}><${Btn} arrow disabled=${!ok} onClick=${()=>onSave({...v,name:v.name.trim()})}>${isNew?'Створити':'Зберегти'}</${Btn}></div>`}>
+    <div class="row" style=${{alignItems:'flex-start',gap:'18px'}}>
+      <div class="book book-pre" aria-hidden="true"><${BookFace} g=${{...v,name:v.name.trim()||'Назва'}} no=${1} n=${0}/></div>
+      <div style=${{display:'flex',flexDirection:'column',gap:'14px',flex:1,minWidth:0}}>
+        <label class="field">Назва на обкладинці<input id="group-name" type="text" value=${v.name} placeholder="Наприклад: Дизайн" onInput=${e=>up('name',e.target.value)} onKeyDown=${e=>{ if(e.key==='Enter' && ok) onSave({...v,name:v.name.trim()}); }} autoFocus/></label>
+        <div class="field">Колір<div class="color-picks" role="radiogroup" aria-label="Колір книжки">${BOOK_COLORS.map(c=>html`<button type="button" key=${c.k} title=${c.name} aria-label=${c.name} aria-pressed=${bookColor(v).k===c.k} style=${{'--bc':c.bg}} onClick=${()=>up('color',c.k)}></button>`)}</div></div>
+      </div>
+    </div>
+    ${!isNew && html`<p class="muted small" style=${{margin:0}}>Якщо видалити книжку, її записи не зникнуть, а перейдуть у «Без групи».</p>`}
+  </${Modal}>`;
+}
+function NoteCard({n, groups, autoFocus, onSave, onBlurEmpty, onPin, onMove, onDelete, onFocused}){
+  const [text,setText] = useState(()=>noteText(n));
+  const ref = useRef(null); const timer = useRef(null); const editing = useRef(false);
+  useEffect(()=>{ if(!editing.current) setText(noteText(n)); },[n.title,n.body]);
+  const grow = () => { const el=ref.current; if(!el) return; el.style.height='auto'; el.style.height=el.scrollHeight+'px'; };
+  useEffect(grow,[text]);
+  useEffect(()=>{ if(autoFocus && ref.current){ ref.current.focus(); onFocused(); } },[autoFocus]);
+  const commit = v => { clearTimeout(timer.current); if(v!==noteText(n)) onSave(v); };
+  const fmt = t => { const d=new Date(t); return d.getDate()+' '+MONTHS_GEN[d.getMonth()]+', '+pad(d.getHours())+':'+pad(d.getMinutes()); };
+  return html`<article class=${'card note'+(n.pinned?' pinned':'')}>
+    <div class="note-tools">
+      <button class=${'nt'+(n.pinned?' on':'')} aria-pressed=${!!n.pinned} aria-label=${n.pinned?'Відкріпити':'Закріпити'} title=${n.pinned?'Відкріпити':'Закріпити'} onClick=${onPin}>${I.pin()}</button>
+      ${groups.length>0 && html`<label class="nt move" title="Перенести в групу">${I.folder()}<select id=${'move-'+n.id} aria-label="Перенести в групу" value=${n.group||''} onChange=${e=>onMove(e.target.value)}><option value="">Без групи</option>${groups.map(g=>html`<option key=${g.id} value=${g.id}>${g.name}</option>`)}</select></label>`}
+      <button class="nt" aria-label="Видалити запис" title="Видалити" onClick=${onDelete}>${I.close()}</button>
+    </div>
+    <textarea ref=${ref} id=${'note-'+n.id} class="note-text" rows="1" placeholder="Новий запис…" value=${text} aria-label="Текст запису"
+      onFocus=${()=>{ editing.current=true; }}
+      onInput=${e=>{ const v=e.target.value; setText(v); clearTimeout(timer.current); timer.current=setTimeout(()=>commit(v),700); }}
+      onBlur=${e=>{ editing.current=false; const v=e.target.value; if(!v.trim()) onBlurEmpty(); else commit(v); }}></textarea>
+    <div class="note-date">${fmt(n.updated)}</div>
+  </article>`;
+}
+
+/* ---------- Finance ---------- */
+function niceCeil(v){ if(v<=0) return 1; const p=Math.pow(10,Math.floor(Math.log10(v))); const n=v/p; return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p; }
+function compact(v){ if(v>=1e6) return nf.format(Math.round(v/1e5)/10)+'м'; if(v>=1e3) return nf.format(Math.round(v/100)/10)+'к'; return nf.format(v); }
+
+function Finance({s}){
+  const [tab,setTab] = useState('ops');
+  const [form,setForm] = useState(null);
+  const [catForm,setCatForm] = useState(null);
+  const now = new Date();
+  const [ym,setYm] = useState({y:now.getFullYear(), m:now.getMonth()});
+  const [period,setPeriod] = useState(3);
+  const {cats, tx} = s.finance;
+  const catById = useMemo(()=>Object.fromEntries(cats.map(c=>[c.id,c])),[cats]);
+  const monthPrefix = ym.y+'-'+pad(ym.m+1);
+  const monthTx = tx.filter(t=>t.date.startsWith(monthPrefix)).sort((a,b)=>b.date.localeCompare(a.date));
+  const sum = (list,type) => list.filter(t=>t.type===type).reduce((a,t)=>a+t.amount,0);
+  const mIn = sum(monthTx,'income'), mOut = sum(monthTx,'expense');
+  const moveMonth = n => { const d=new Date(ym.y,ym.m+n,1); setYm({y:d.getFullYear(),m:d.getMonth()}); };
+
+  const saveTx = t => { setSection('finance', f=>({...f, tx: f.tx.some(x=>x.id===t.id) ? f.tx.map(x=>x.id===t.id?t:x) : [...f.tx,t]})); setForm(null); };
+  const delTx = id => { undoable('Операцію видалено','finance', f=>({...f, tx:f.tx.filter(x=>x.id!==id)})); setForm(null); };
+  const saveCat = c => { setSection('finance', f=>({...f, cats: f.cats.some(x=>x.id===c.id) ? f.cats.map(x=>x.id===c.id?c:x) : [...f.cats,c]})); setCatForm(null); };
+  const delCat = id => { undoable('Категорію видалено','finance', f=>({...f, cats:f.cats.filter(x=>x.id!==id)})); setCatForm(null); };
+
+  const groups = [];
+  monthTx.forEach(t=>{ const g=groups[groups.length-1]; if(g&&g.date===t.date) g.items.push(t); else groups.push({date:t.date,items:[t]}); });
+  const blankTx = type => ({id:newId(), type, amount:'', catId:(cats.find(c=>c.type===type)||{}).id||'', date: monthPrefix===todayKey().slice(0,7) ? todayKey() : monthPrefix+'-01', note:''});
+
+  return html`<${React.Fragment}>
+    <${Head} eyebrow=${MONTHS[ym.m]+' '+ym.y} title="Фінанси" sub="доходи і витрати"
+      right=${html`<${Btn} kind="ghost" onClick=${()=>setForm(blankTx('income'))}>+ Дохід</${Btn}><${Btn} arrow onClick=${()=>setForm(blankTx('expense'))}>Витрата</${Btn}>`}/>
+    <div class="row" style=${{justifyContent:'space-between'}}>
+      <div class="seg" role="group" aria-label="Розділ фінансів">
+        ${[['ops','Операції'],['report','Звіт'],['cats','Категорії']].map(([k,l])=>html`<button key=${k} aria-pressed=${tab===k} onClick=${()=>setTab(k)}>${l}</button>`)}
+      </div>
+      ${tab==='ops' && html`<div class="monthpill"><button class="icon-btn quiet" aria-label="Попередній місяць" onClick=${()=>moveMonth(-1)}>${I.left()}</button><b>${MONTHS[ym.m]} ${ym.y}</b><button class="icon-btn quiet" aria-label="Наступний місяць" onClick=${()=>moveMonth(1)}>${I.right()}</button></div>`}
+      ${tab==='report' && html`<div class="seg" role="group" aria-label="Період звіту">${[[3,'3 місяці'],[6,'Півроку'],[12,'Рік']].map(([k,l])=>html`<button key=${k} aria-pressed=${period===k} onClick=${()=>setPeriod(k)}>${l}</button>`)}</div>`}
+    </div>
+
+    ${tab==='ops' && html`<${React.Fragment}>
+      <div class="kpis">
+        <div class="card kpi"><div class="muted small">Доходи за місяць</div><div class="v num">${money(mIn)}</div></div>
+        <div class="card kpi"><div class="muted small">Витрати за місяць</div><div class="v num">${money(mOut)}</div></div>
+        <div class="card kpi dark"><div class="muted small">Залишок</div><div class="v num">${(mIn-mOut<0?'−':'')+money(Math.abs(mIn-mOut))}</div></div>
+      </div>
+      <section class="card">
+        <div class="card-head"><h2>Операції</h2><span class="muted small">${monthTx.length} ${plural(monthTx.length,'запис','записи','записів')}</span></div>
+        ${monthTx.length===0 && html`<div class="empty">За ${MONTHS[ym.m].toLowerCase()} операцій немає. Додайте дохід або витрату кнопками вгорі.</div>`}
+        ${groups.map(g=>html`<div key=${g.date}>
+          <div class="tx-day">${humanShort(g.date)} · ${WD_FULL[parseKey(g.date).getDay()]}</div>
+          <div class="list">${g.items.map(t=>{ const c=catById[t.catId]; return html`<div key=${t.id} class="item click" onClick=${()=>setForm({...t})} role="button" tabIndex="0" onKeyDown=${e=>{ if(e.key==='Enter') setForm({...t}); }}>
+            <span class="emo">${c?c.emoji:'❔'}</span>
+            <span class="txt"><b style=${{fontWeight:500}}>${c?c.name:'Без категорії'}</b>${t.note && html`<span class="muted"> · ${t.note}</span>`}</span>
+            <span class=${'amt'+(t.type==='income'?' in':'')}>${t.type==='income'?'+':'−'}${money(t.amount)}</span>
+          </div>`; })}</div>
+        </div>`)}
+      </section>
+    </${React.Fragment}>`}
+
+    ${tab==='report' && html`<${Report} tx=${tx} catById=${catById} months=${period}/>`}
+
+    ${tab==='cats' && html`<div class="rep-grid">
+      ${[['expense','Категорії витрат'],['income','Категорії доходів']].map(([type,title])=>{ const list=cats.filter(c=>c.type===type);
+        return html`<section key=${type} class="card"><div class="card-head"><h2>${title}</h2><button class="icon-btn" aria-label="Додати категорію" onClick=${()=>setCatForm({id:newId(),name:'',emoji:type==='income'?'💰':'🛒',type})}>${I.plus()}</button></div>
+          <div class="list">${list.length===0 && html`<div class="empty">Категорій ще немає.</div>`}
+          ${list.map(c=>{ const cnt=tx.filter(t=>t.catId===c.id).length; return html`<div key=${c.id} class="item"><span class="emo">${c.emoji}</span><span class="txt">${c.name}</span><span class="muted small">${cnt} ${plural(cnt,'операція','операції','операцій')}</span><button class="icon-btn quiet" aria-label="Редагувати" onClick=${()=>setCatForm({...c})}>${I.edit()}</button></div>`; })}</div>
+        </section>`; })}
+    </div>`}
+
+    ${form && html`<${TxForm} t=${form} cats=${cats} isNew=${!tx.some(x=>x.id===form.id)} onSave=${saveTx} onDelete=${()=>delTx(form.id)} onClose=${()=>setForm(null)} onNewCat=${()=>{ setForm(null); setTab('cats'); }}/>`}
+    ${catForm && html`<${CatForm} c=${catForm} isNew=${!cats.some(x=>x.id===catForm.id)} onSave=${saveCat} onDelete=${()=>delCat(catForm.id)} onClose=${()=>setCatForm(null)}/>`}
+  </${React.Fragment}>`;
+}
+function TxForm({t,cats,isNew,onSave,onDelete,onClose,onNewCat}){
+  const [v,setV] = useState({...t, amount: t.amount===''?'':String(t.amount)}); const up=(k,x)=>setV(o=>({...o,[k]:x}));
+  const list = cats.filter(c=>c.type===v.type);
+  const amt = parseFloat(String(v.amount).replace(',','.'));
+  const ok = amt>0 && v.date;
+  const setType = type => setV(o=>({...o,type,catId: (cats.find(c=>c.type===type&&c.id===o.catId)||cats.find(c=>c.type===type)||{}).id||''}));
+  return html`<${Modal} title=${isNew?(v.type==='income'?'Новий дохід':'Нова витрата'):'Операція'} onClose=${onClose}
+    foot=${html`${!isNew ? html`<${DeleteBtn} onConfirm=${onDelete}/>` : html`<span></span>`}<div class="row"><${Btn} kind="ghost" onClick=${onClose}>Скасувати</${Btn}><${Btn} arrow disabled=${!ok} onClick=${()=>onSave({...v,amount:Math.round(amt*100)/100})}>Зберегти</${Btn}></div>`}>
+    <div class="seg" role="group" aria-label="Тип"><button aria-pressed=${v.type==='expense'} onClick=${()=>setType('expense')}>Витрата</button><button aria-pressed=${v.type==='income'} onClick=${()=>setType('income')}>Дохід</button></div>
+    <div class="two">
+      <label class="field">Сума, ₴<input id="tx-amount" type="text" inputMode="decimal" placeholder="0" value=${v.amount} onInput=${e=>up('amount',e.target.value)} autoFocus style=${{fontFamily:'var(--f-mono)',fontSize:'20px'}}/></label>
+      <label class="field">Дата<input id="tx-date" type="date" value=${v.date} onInput=${e=>up('date',e.target.value)}/></label>
+    </div>
+    <div class="field" style=${{display:'flex',flexDirection:'column',gap:'6px'}}><span class="muted small">Категорія</span>
+      <div class="emoji-picks" style=${{gap:'6px'}}>
+        ${list.map(c=>html`<button key=${c.id} type="button" aria-pressed=${v.catId===c.id} onClick=${()=>up('catId',c.id)} style=${{width:'auto',padding:'0 12px',fontSize:'14px',display:'inline-flex',alignItems:'center',gap:'6px'}}><span style=${{fontSize:'17px'}}>${c.emoji}</span>${c.name}</button>`)}
+        <button type="button" onClick=${onNewCat} style=${{width:'auto',padding:'0 12px',fontSize:'14px'}}>+ Нова категорія</button>
+      </div>
+    </div>
+    <label class="field">Коментар<input id="tx-note" type="text" value=${v.note} placeholder="Необовʼязково" onInput=${e=>up('note',e.target.value)}/></label>
+  </${Modal}>`;
+}
+function CatForm({c,isNew,onSave,onDelete,onClose}){
+  const [v,setV] = useState(c); const up=(k,x)=>setV(o=>({...o,[k]:x}));
+  return html`<${Modal} title=${isNew?'Нова категорія':'Категорія'} onClose=${onClose}
+    foot=${html`${!isNew ? html`<${DeleteBtn} onConfirm=${onDelete}/>` : html`<span></span>`}<div class="row"><${Btn} kind="ghost" onClick=${onClose}>Скасувати</${Btn}><${Btn} arrow disabled=${!v.name.trim()} onClick=${()=>onSave({...v,name:v.name.trim(),emoji:v.emoji||'•'})}>Зберегти</${Btn}></div>`}>
+    <div class="seg" role="group" aria-label="Тип"><button aria-pressed=${v.type==='expense'} onClick=${()=>up('type','expense')}>Витрати</button><button aria-pressed=${v.type==='income'} onClick=${()=>up('type','income')}>Доходи</button></div>
+    <label class="field">Назва<input id="cat-name" type="text" value=${v.name} placeholder="Наприклад: Кафе" onInput=${e=>up('name',e.target.value)} autoFocus/></label>
+    <${EmojiField} id="cat-emoji" value=${v.emoji} onChange=${x=>up('emoji',x)}/>
+    ${!isNew && html`<p class="muted small" style=${{margin:0}}>Якщо видалити категорію, її операції залишаться з позначкою «Без категорії».</p>`}
+  </${Modal}>`;
+}
+function Report({tx, catById, months}){
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth()-(months-1), 1);
+  const startKey = keyOf(start), endKey = todayKey();
+  const list = tx.filter(t=>t.date>=startKey && t.date<=endKey);
+  const totIn = list.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
+  const totOut = list.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+  const byCat = type => { const m={}; list.filter(t=>t.type===type).forEach(t=>{ m[t.catId]=(m[t.catId]||0)+t.amount; });
+    return Object.entries(m).map(([id,v])=>({id,v,c:catById[id]})).sort((a,b)=>b.v-a.v); };
+  const outCats = byCat('expense'), inCats = byCat('income');
+  const mList = Array.from({length:months},(_,i)=>{ const d=new Date(start.getFullYear(), start.getMonth()+i, 1); const p=d.getFullYear()+'-'+pad(d.getMonth()+1);
+    const ml=list.filter(t=>t.date.startsWith(p)); return {label:MONTHS_SHORT[d.getMonth()], inc:ml.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0), out:ml.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0)}; });
+  const max = niceCeil(Math.max(1,...mList.map(m=>Math.max(m.inc,m.out))));
+  const W=680, H=240, L=52, B=28, T=12, R=8; const cw=(W-L-R)/months; const bw=Math.min(22,cw*0.32);
+  const y = v => T + (H-T-B) * (1 - v/max);
+  const avg = totOut / months;
+  const CatList = ({items,total,inc}) => html`<div>${items.length===0 && html`<div class="empty">За цей період записів немає.</div>`}
+    ${items.map(({id,v,c})=>html`<div key=${id} class=${'catbar'+(inc?' inc':'')}><span class="emo">${c?c.emoji:'❔'}</span><span style=${{minWidth:0,overflowWrap:'anywhere'}}>${c?c.name:'Без категорії'} <span class="muted small num">${Math.round(v/total*100)}%</span></span><span class="amt">${money(v)}</span><div class="track"><i style=${{width:(v/total*100)+'%'}}></i></div></div>`)}</div>`;
+  return html`<${React.Fragment}>
+    <div class="kpis">
+      <div class="card kpi"><div class="muted small">Доходи · ${humanShort(startKey)} — ${humanShort(endKey)}</div><div class="v num">${money(totIn)}</div></div>
+      <div class="card kpi"><div class="muted small">Витрати · в середньому ${money(avg)} на місяць</div><div class="v num">${money(totOut)}</div></div>
+      <div class="card kpi dark"><div class="muted small">Різниця за період</div><div class="v num">${(totIn-totOut<0?'−':'')+money(Math.abs(totIn-totOut))}</div></div>
+    </div>
+    <section class="card">
+      <div class="card-head"><h2>По місяцях</h2><div class="legend"><span><i style=${{background:'var(--ink)'}}></i>Витрати</span><span><i style=${{background:'var(--mint)'}}></i>Доходи</span></div></div>
+      <div style=${{overflowX:'auto'}}><svg class="chart" viewBox=${'0 0 '+W+' '+H} role="img" aria-label="Доходи і витрати по місяцях" style=${{minWidth:'420px'}}>
+        ${[0,.25,.5,.75,1].map(f=>html`<g key=${f}><line x1=${L} x2=${W-R} y1=${y(max*f)} y2=${y(max*f)} stroke="var(--line)" stroke-width="1"/><text x=${L-8} y=${y(max*f)+4} text-anchor="end" font-size="11" fill="var(--muted)" font-family="JetBrains Mono, monospace">${compact(max*f)}</text></g>`)}
+        ${mList.map((m,i)=>{ const cx=L+cw*i+cw/2; return html`<g key=${i}>
+          <rect x=${cx-bw-2} y=${y(m.out)} width=${bw} height=${Math.max(0,H-B-y(m.out))} rx="5" fill="var(--ink)"><title>${'Витрати: '+money(m.out)}</title></rect>
+          <rect x=${cx+2} y=${y(m.inc)} width=${bw} height=${Math.max(0,H-B-y(m.inc))} rx="5" fill="var(--mint)"><title>${'Доходи: '+money(m.inc)}</title></rect>
+          <text x=${cx} y=${H-8} text-anchor="middle" font-size="12" fill="var(--muted)">${m.label}</text></g>`; })}
+      </svg></div>
+    </section>
+    <div class="rep-grid">
+      <section class="card"><div class="card-head"><h2>На що пішли гроші</h2><span class="muted small num">${money(totOut)}</span></div><${CatList} items=${outCats} total=${totOut||1}/></section>
+      <section class="card"><div class="card-head"><h2>Звідки прийшли</h2><span class="muted small num">${money(totIn)}</span></div><${CatList} items=${inCats} total=${totIn||1} inc=${true}/></section>
+    </div>
+  </${React.Fragment}>`;
+}
+
+/* ---------- Goals ---------- */
+function goalPct(g){ if(g.done) return 100; if(g.steps && g.steps.length) return Math.round(g.steps.filter(x=>x.done).length/g.steps.length*100); return g.progress||0; }
+function Goals({s}){
+  const [filter,setFilter] = useState('active'); const [form,setForm] = useState(null);
+  const tk = todayKey();
+  const list = s.goals.filter(g => filter==='active' ? !g.done : g.done).sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
+  const save = g => { setSection('goals', l => l.some(x=>x.id===g.id) ? l.map(x=>x.id===g.id?g:x) : [...l,g]); setForm(null); };
+  const remove = id => { undoable('Ціль видалено','goals', l=>l.filter(x=>x.id!==id)); setForm(null); };
+  const patch = (id,fn) => setSection('goals', l=>l.map(x=>x.id===id?fn(x):x));
+  const active = s.goals.filter(g=>!g.done).length, achieved = s.goals.length-active;
+  return html`<${React.Fragment}>
+    <${Head} eyebrow=${active+' в роботі · '+achieved+' досягнуто'} title="Цілі" sub="і кроки до них"
+      right=${html`<${Btn} arrow onClick=${()=>setForm({id:newId(),title:'',desc:'',deadline:'',steps:[],progress:0,done:false})}>Нова ціль</${Btn}>`}/>
+    <div class="seg" role="group" aria-label="Фільтр цілей" style=${{alignSelf:'flex-start'}}><button aria-pressed=${filter==='active'} onClick=${()=>setFilter('active')}>Активні</button><button aria-pressed=${filter==='done'} onClick=${()=>setFilter('done')}>Досягнуті</button></div>
+    ${list.length===0 && html`<section class="card"><h2>${filter==='active'?'Активних цілей немає':'Досягнутих цілей поки немає'}</h2><p class="muted">${filter==='active'?'Сформулюйте ціль, поставте дедлайн і розбийте її на кроки. Прогрес рахується сам, коли ви відмічаєте кроки.':'Коли ви позначите ціль як досягнуту, вона переїде сюди.'}</p></section>`}
+    <div class="grid-cards">
+      ${list.map(g=>{ const p=goalPct(g); const left=g.deadline?daysBetween(tk,g.deadline):null;
+        return html`<article key=${g.id} class=${'card goal'+(g.done?' achieved':'')}>
+          <div class="row" style=${{justifyContent:'space-between',alignItems:'flex-start',flexWrap:'nowrap'}}><h3 style=${{overflowWrap:'anywhere'}}>${g.title}</h3><button class="icon-btn quiet" aria-label="Редагувати" onClick=${()=>setForm(clone(g))}>${I.edit()}</button></div>
+          ${g.desc && html`<p class="desc muted small">${g.desc}</p>`}
+          <div class="pct num">${p}%</div>
+          <div class="row"><span class=${'tag'+(left!==null&&left<0&&!g.done?' warn':'')}>${g.done ? 'Досягнуто' : left===null ? 'без дедлайну' : left>=0 ? 'до '+humanShort(g.deadline)+' · ще '+left+' '+dayWord(left) : 'дедлайн минув '+(-left)+' '+dayWord(-left)+' тому'}</span>${g.steps&&g.steps.length>0 && html`<span class="tag">${g.steps.filter(x=>x.done).length} з ${g.steps.length} ${plural(g.steps.length,'кроку','кроків','кроків')}</span>`}</div>
+          <div class="bar"><i style=${{width:p+'%'}}></i></div>
+          ${g.steps && g.steps.length>0 && html`<div class="list">${g.steps.map(st=>html`<div key=${st.id} class=${'item'+(st.done?' done':'')}>
+            <button class=${'check'+(st.done?' on':'')} aria-pressed=${st.done} aria-label=${'Крок: '+st.text} onClick=${()=>patch(g.id,x=>({...x,steps:x.steps.map(y=>y.id===st.id?{...y,done:!y.done}:y)}))}>${I.check()}</button><span class="txt">${st.text}</span></div>`)}</div>`}
+          <div class="row">${g.done
+            ? html`<${Btn} kind="ghost" onClick=${()=>patch(g.id,x=>({...x,done:false}))}>Повернути в роботу</${Btn}>`
+            : html`<${Btn} kind="ghost" onClick=${()=>patch(g.id,x=>({...x,done:true,doneAt:tk}))}>Ціль досягнута</${Btn}>`}</div>
+        </article>`; })}
+    </div>
+    ${form && html`<${GoalForm} g=${form} isNew=${!s.goals.some(x=>x.id===form.id)} onSave=${save} onDelete=${()=>remove(form.id)} onClose=${()=>setForm(null)}/>`}
+  </${React.Fragment}>`;
+}
+function GoalForm({g,isNew,onSave,onDelete,onClose}){
+  const [v,setV] = useState(g); const up=(k,x)=>setV(o=>({...o,[k]:x}));
+  const [step,setStep] = useState('');
+  const addStep = e => { e.preventDefault(); const t=step.trim(); if(!t) return; up('steps',[...(v.steps||[]),{id:newId(),text:t,done:false}]); setStep(''); };
+  return html`<${Modal} title=${isNew?'Нова ціль':'Редагувати ціль'} onClose=${onClose}
+    foot=${html`${!isNew ? html`<${DeleteBtn} onConfirm=${onDelete}/>` : html`<span></span>`}<div class="row"><${Btn} kind="ghost" onClick=${onClose}>Скасувати</${Btn}><${Btn} arrow disabled=${!v.title.trim()} onClick=${()=>onSave({...v,title:v.title.trim()})}>Зберегти</${Btn}></div>`}>
+    <label class="field">Ціль<input id="goal-title" type="text" value=${v.title} placeholder="Наприклад: Пробігти напівмарафон" onInput=${e=>up('title',e.target.value)} autoFocus/></label>
+    <label class="field">Опис<input id="goal-desc" type="text" value=${v.desc} placeholder="Чому це важливо" onInput=${e=>up('desc',e.target.value)}/></label>
+    <label class="field">Дедлайн<input id="goal-deadline" type="date" value=${v.deadline} onInput=${e=>up('deadline',e.target.value)}/></label>
+    <div class="field" style=${{display:'flex',flexDirection:'column',gap:'6px'}}><span class="muted small">Кроки (прогрес рахується за ними)</span>
+      <div class="list">${(v.steps||[]).map(st=>html`<div key=${st.id} class="item"><span class="txt">${st.text}</span><button type="button" class="icon-btn quiet" aria-label="Прибрати крок" onClick=${()=>up('steps',v.steps.filter(x=>x.id!==st.id))}>${I.close()}</button></div>`)}</div>
+      <form class="addrow" style=${{marginTop:'4px'}} onSubmit=${addStep}><input id="goal-step" type="text" placeholder="Новий крок" value=${step} onInput=${e=>setStep(e.target.value)}/><${Btn} type="submit" kind="ghost">Додати крок</${Btn}></form>
+    </div>
+    ${(!v.steps || v.steps.length===0) && html`<label class="field">Прогрес вручну: ${v.progress||0}%<input id="goal-progress" type="range" min="0" max="100" step="5" value=${v.progress||0} onInput=${e=>up('progress',Number(e.target.value))} style=${{accentColor:'var(--ink)'}}/></label>`}
+  </${Modal}>`;
+}
+
+/* ---------- Dream gallery ---------- */
+function shrink(file, max, q){
+  return new Promise((res,rej)=>{
+    const url = URL.createObjectURL(file); const img = new Image();
+    img.onload = () => { const k = Math.min(1, max/Math.max(img.width,img.height)); const c=document.createElement('canvas');
+      c.width=Math.round(img.width*k); c.height=Math.round(img.height*k); c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
+      c.toBlob(b=> b ? res({blob:b, canvas:c}) : rej(new Error('encode')), 'image/jpeg', q); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('decode')); };
+    img.src = url;
+  });
+}
+const dreamSrc = d => d.asset ? '/_blob/'+d.asset : d.src;
+function Dreams({s}){
+  const [busy,setBusy] = useState(0); const [err,setErr] = useState(''); const [over,setOver] = useState(false); const [open,setOpen] = useState(null);
+  const inputRef = useRef(null);
+  const cloud = !!store.assets;
+  const add = async files => {
+    const list = Array.from(files||[]).filter(f=>f.type.startsWith('image/'));
+    if(!list.length){ setErr('Оберіть файли зображень: JPG, PNG, WEBP або HEIC.'); return; }
+    setErr(''); setBusy(n=>n+list.length);
+    for(const f of list){
+      try{
+        let item = {id:newId(), caption:'', added:Date.now()};
+        if(store.assets){
+          const {blob} = await shrink(f, 2200, .88);
+          const r = await store.assets.upload(blob, {type:'image/jpeg'});
+          item.asset = r.id;
+        } else {
+          const {canvas} = await shrink(f, 1100, .8);
+          item.src = canvas.toDataURL('image/jpeg', .8);
+        }
+        setSection('dreams', l=>[item, ...l]);
+      }catch(e){
+        setErr(e && e.code==='quota_exceeded' ? 'Місце для фото закінчилося. Видаліть кілька старих фото й спробуйте знову.' : e && e.code==='too_large' ? 'Фото завелике, оберіть менше.' : 'Не вдалося завантажити «'+f.name+'». Спробуйте ще раз.');
+      }
+      setBusy(n=>n-1);
+    }
+  };
+  const remove = d => { undoable('Фото видалено','dreams', l=>l.filter(x=>x.id!==d.id), ()=>{ if(d.asset && store.assets && !store.state.dreams.some(x=>x.id===d.id)) store.assets.delete(d.asset).catch(()=>{}); }); setOpen(null); };
+  const saveCap = (id,caption) => { setSection('dreams', l=>l.map(x=>x.id===id?{...x,caption}:x)); setOpen(null); };
+  return html`<${React.Fragment}>
+    <${Head} eyebrow=${s.dreams.length+' '+plural(s.dreams.length,'фото','фото','фото')} title="Галерея мрії" sub="те, до чого я йду"
+      right=${html`<${Btn} arrow onClick=${()=>inputRef.current && inputRef.current.click()}>Додати фото</${Btn}>`}/>
+    <input ref=${inputRef} id="dream-files" class="vis-hidden" type="file" accept="image/*" multiple onChange=${e=>{ add(e.target.files); e.target.value=''; }}/>
+    <div class=${'drop'+(over?' over':'')} onDragOver=${e=>{e.preventDefault(); setOver(true);}} onDragLeave=${()=>setOver(false)} onDrop=${e=>{e.preventDefault(); setOver(false); add(e.dataTransfer.files);}}>
+      <div style=${{minWidth:0}}><h3>Перетягніть сюди фото, які надихають</h3><div class="muted small">Будинок, авто, подорожі, форма, люди, якими захоплюєтесь. ${cloud?'Фото зберігаються у вашому акаунті.':'Зараз фото зберігаються тільки в цьому браузері.'}</div></div>
+      <${Btn} kind="ghost" onClick=${()=>inputRef.current && inputRef.current.click()}>Обрати файли</${Btn}>
+    </div>
+    ${err && html`<p style=${{color:'var(--danger)',margin:0}}>${err}</p>`}
+    ${s.dreams.length===0 && !busy && html`<p class="muted" style=${{margin:'8px 8px 0'}}>Тут поки порожньо. Додайте перше фото мрії.</p>`}
+    <div class="gallery">
+      ${Array.from({length:busy}).map((_,i)=>html`<div key=${'b'+i} class="shot busy">Завантажую…</div>`)}
+      ${s.dreams.map(d=>html`<button key=${d.id} class="shot" onClick=${()=>setOpen(d)} aria-label=${d.caption||'Фото мрії'}>
+        <img src=${dreamSrc(d)} alt=${d.caption||'Фото мрії'} loading="lazy"/>
+        ${d.caption && html`<figcaption>${d.caption}</figcaption>`}
+      </button>`)}
+    </div>
+    ${open && html`<${DreamView} d=${open} onSave=${c=>saveCap(open.id,c)} onDelete=${()=>remove(open)} onClose=${()=>setOpen(null)}/>`}
+  </${React.Fragment}>`;
+}
+function DreamView({d,onSave,onDelete,onClose}){
+  const [cap,setCap] = useState(d.caption||'');
+  return html`<${Modal} title="Мрія" onClose=${onClose}
+    foot=${html`<${DeleteBtn} onConfirm=${onDelete}/><div class="row"><${Btn} kind="ghost" onClick=${onClose}>Закрити</${Btn}><${Btn} arrow onClick=${()=>onSave(cap.trim())}>Зберегти</${Btn}></div>`}>
+    <div class="lightbox"><img src=${dreamSrc(d)} alt=${d.caption||'Фото мрії'}/></div>
+    <label class="field">Підпис<input id="dream-caption" type="text" value=${cap} placeholder="Наприклад: Будинок біля моря до 2030" onInput=${e=>setCap(e.target.value)}/></label>
+  </${Modal}>`;
+}
+
+/* ---------- Settings ---------- */
+const RESET_OPTS = [
+  {k:'checks', title:'Відмітки звичок по днях', desc:'Усі галочки «виконано» на кожен день. Самі звички лишаються.', def:true,
+    count:s=>Object.values(s.checks).reduce((a,d)=>a+Object.keys(d).length,0), unit:['відмітка','відмітки','відміток'],
+    apply:()=>setSection('checks',{}), sec:['checks']},
+  {k:'plans', title:'Справи по днях', desc:'Усі справи з головної за всі дні, виконані й ні.', def:true,
+    count:s=>Object.values(s.plans).reduce((a,l)=>a+l.length,0), unit:['справа','справи','справ'],
+    apply:()=>setSection('plans',{}), sec:['plans']},
+  {k:'counters', title:'Лічильники звичок', desc:'Дні в усіх звичках почнуться з сьогодні, рекорди й зриви поганих звичок обнуляться.', def:true,
+    count:s=>s.habits.length, unit:['звичка','звички','звичок'],
+    apply:()=>setSection('habits',l=>l.map(h=>({...h,since:todayKey(),best:0,relapses:0}))), sec:['habits']},
+  {k:'tx', title:'Фінансові операції', desc:'Усі доходи й витрати. Категорії лишаються.', def:false,
+    count:s=>s.finance.tx.length, unit:['операція','операції','операцій'],
+    apply:()=>setSection('finance',f=>({...f,tx:[]})), sec:['finance']}
+];
+let installEvt = null;
+const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; emit(); });
+window.addEventListener('appinstalled', () => { installEvt = null; emit(); });
+function exportBackup(){
+  const data = {app:'i-always-win', version:1, exported:new Date().toISOString(), state:store.state};
+  const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'i-always-win-'+todayKey()+'.json';
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function importBackup(file, done){
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const d = JSON.parse(r.result); const st = d && (d.state || d);
+      const secs = SECTIONS.filter(k => st && st[k] !== undefined);
+      if(!secs.length) throw 0;
+      finishToast();
+      const prev = Object.fromEntries(secs.map(k=>[k,store.state[k]]));
+      secs.forEach(k => setSection(k, st[k]));
+      store.toast = {text:'Дані відновлено з файлу', undo:()=>{ store.toast=null; clearTimeout(store.toastT); secs.forEach(k=>setSection(k, prev[k])); }};
+      clearTimeout(store.toastT); store.toastT = setTimeout(()=>{ finishToast(); emit(); }, 10000);
+      emit(); done('');
+    }catch(e){ done('Цей файл не схожий на резервну копію I Always Win.'); }
+  };
+  r.onerror = () => done('Не вдалося прочитати файл.');
+  r.readAsText(file);
+}
+function Settings({s}){
+  const backupRef = useRef(null); const [bMsg,setBMsg] = useState('');
+  const [sel,setSel] = useState(()=>Object.fromEntries(RESET_OPTS.map(o=>[o.k,o.def])));
+  const [confirm,setConfirm] = useState(false);
+  const chosen = RESET_OPTS.filter(o=>sel[o.k]);
+  const doReset = () => {
+    finishToast();
+    const secs = [...new Set(chosen.flatMap(o=>o.sec))];
+    const prev = Object.fromEntries(secs.map(k=>[k,store.state[k]]));
+    chosen.forEach(o=>o.apply());
+    setConfirm(false);
+    store.toast = {text:'Статистику скинуто', undo:()=>{ store.toast=null; clearTimeout(store.toastT); secs.forEach(k=>setSection(k, prev[k])); }};
+    clearTimeout(store.toastT); store.toastT = setTimeout(()=>{ finishToast(); emit(); }, 10000);
+    emit();
+  };
+  return html`<${React.Fragment}>
+    <${Head} eyebrow="Налаштування" title="Налаштування" sub="і скидання статистики"/>
+    <section class="card">
+      <div class="card-head"><h2>Скинути статистику</h2><span class="muted small">Оберіть, що почати з нуля</span></div>
+      <div class="list">
+        ${RESET_OPTS.map(o=>{ const n=o.count(s); return html`<label key=${o.k} class="item reset-opt">
+          <input id=${'reset-'+o.k} type="checkbox" checked=${!!sel[o.k]} onChange=${e=>{ setSel(v=>({...v,[o.k]:e.target.checked})); setConfirm(false); }}/>
+          <span class="txt"><b>${o.title}</b><br/><span class="muted small">${o.desc}</span></span>
+          <span class="tag num">${n} ${plural(n,...o.unit)}</span>
+        </label>`; })}
+      </div>
+      ${!confirm
+        ? html`<div class="row" style=${{marginTop:'16px'}}><button class="btn danger" disabled=${!chosen.length} onClick=${()=>setConfirm(true)}>Скинути вибране</button></div>`
+        : html`<div class="confirm-box">
+            <div><b>Точно скинути?</b><div class="small">${chosen.map(o=>o.title).join(', ')}. Після скидання буде 10 секунд, щоб натиснути «Повернути».</div></div>
+            <div class="row"><${Btn} kind="ghost" onClick=${()=>setConfirm(false)}>Скасувати</${Btn}><button class="btn danger armed" onClick=${doReset}>Так, скинути</button></div>
+          </div>`}
+    </section>
+    <section class="card">
+      <div class="card-head"><h2>Де зберігаються дані</h2></div>
+      <p class="muted" style=${{margin:0}}>Усе зберігається на цьому пристрої й працює без інтернету. Телефон і компʼютер мають окремі копії, тож щоб перенести дані, збережіть резервну копію тут і відкрийте її на іншому пристрої.</p>
+      <div class="row" style=${{marginTop:'16px'}}>
+        <${Btn} kind="ghost" onClick=${exportBackup}>Зберегти резервну копію</${Btn}>
+        <${Btn} kind="ghost" onClick=${()=>backupRef.current&&backupRef.current.click()}>Відновити з файлу</${Btn}>
+        <input ref=${backupRef} type="file" accept="application/json,.json" class="vis-hidden" onChange=${e=>{ const f=e.target.files&&e.target.files[0]; e.target.value=''; if(f) importBackup(f,setBMsg); }}/>
+      </div>
+      ${bMsg && html`<p class="small" style=${{margin:'12px 0 0'}}>${bMsg}</p>`}
+    </section>
+    ${(installEvt || !standalone) && html`<section class="card">
+      <div class="card-head"><h2>Встановити як застосунок</h2></div>
+      ${installEvt
+        ? html`<${Btn} arrow onClick=${async()=>{ const ev=installEvt; installEvt=null; emit(); ev.prompt(); try{ await ev.userChoice; }catch(e){} }}>Встановити</${Btn}>`
+        : html`<p class="muted" style=${{margin:0}}>На iPhone: кнопка «Поділитися», потім «На початковий екран». На Android і компʼютері: меню браузера, потім «Встановити застосунок».</p>`}
+    </section>`}
+  </${React.Fragment}>`;
+}
+
+/* ---------- App shell ---------- */
+const PAGES = [
+  {id:'home', label:'Головна', icon:I.home, C:Home},
+  {id:'habits', label:'Звички', icon:I.habit, C:Habits},
+  {id:'notes', label:'Записник', icon:I.note, C:Notes},
+  {id:'finance', label:'Фінанси', icon:I.money, C:Finance},
+  {id:'goals', label:'Цілі', icon:I.goal, C:Goals},
+  {id:'dreams', label:'Галерея мрії', short:'Мрії', icon:I.star, C:Dreams},
+  {id:'options', label:'Налаштування', short:'Ще', icon:I.gear, C:Settings, bottom:true}
+];
+const SYNC_LABEL = {local:'Збережено на цьому пристрої', connecting:'Підключаюсь до сховища…', synced:'Збережено у вашому акаунті', offline:'Сховище недоступне, зберігаю локально', error:'Не вдалося зберегти в акаунт', full:'Сховище заповнене'};
+function App(){
+  const s = useStore();
+  const read = () => { const h=(location.hash||'').slice(1); return PAGES.some(p=>p.id===h) ? h : 'home'; };
+  const [page,setPage] = useState(read);
+  useEffect(()=>{ const f=()=>setPage(read()); window.addEventListener('hashchange',f); return ()=>window.removeEventListener('hashchange',f); },[]);
+  const go = id => { setPage(id); try{ history.replaceState(null,'','#'+id); }catch(e){ location.hash=id; } window.scrollTo(0,0); };
+  const P = PAGES.find(p=>p.id===page);
+  const d = new Date();
+  const sc = store.sync==='synced' ? 'ok' : (store.sync==='error'||store.sync==='full'||store.sync==='offline') ? 'bad' : '';
+  return html`<div class="app">
+    <aside class="side">
+      <div class="brand">I always<br/><span>win</span><small>щоденна система перемог</small></div>
+      <nav class="nav" aria-label="Розділи">${PAGES.map(p=>html`<button key=${p.id} class=${p.bottom?'bottom':undefined} aria-current=${page===p.id?'page':undefined} onClick=${()=>go(p.id)}>${p.icon()}<span class="lg">${p.label}</span><span class="sm">${p.short||p.label}</span></button>`)}</nav>
+      <div class="side-foot">
+        <div class="today-card"><div class="d num">${pad(d.getDate())}.${pad(d.getMonth()+1)}</div><div class="m">${WD_FULL[d.getDay()]}, ${d.getFullYear()}</div></div>
+        <div class=${'sync '+sc}><i></i>${SYNC_LABEL[store.sync]||''}</div>
+      </div>
+    </aside>
+    <main class="page" key=${page}><${P.C} s=${s}/></main>
+    <${Toast}/>
+  </div>`;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
+initSync();
+if('serviceWorker' in navigator){ window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(()=>{}); }); }
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+</script>
+</body>
+</html>
