@@ -445,6 +445,7 @@ function setSection(sec, updater){
   const next = typeof updater==='function' ? updater(store.state[sec]) : updater;
   store.state = {...store.state, [sec]:next};
   store.at[sec] = Date.now(); lsSet(sec,next); lsSet('at:'+sec, store.at[sec]);
+  scheduleSync();
   if(store.refs[sec]){
     store.dirty[sec] = true;
     clearTimeout(store.timers[sec]);
@@ -494,6 +495,156 @@ async function initSync(){
     });
   }catch(e){ store.sync='local'; emit(); }
 }
+/* ---------- cloud sync between devices (Vercel, private, by secret sync code) ---------- */
+const CLOUD = {code: lsGet('sync:code') || '', busy:false, again:false, last: lsGet('sync:last') || 0, err:'', timer:null};
+const eq = (a,b) => JSON.stringify(a)===JSON.stringify(b);
+const isObj = v => v && typeof v==='object' && !Array.isArray(v);
+const hasIds = a => Array.isArray(a) && a.length>0 && a.every(x=>isObj(x) && typeof x.id==='string');
+// Three-way merge: what changed on this device and what changed on the other one are both kept.
+// Items deleted on one side (present in base, untouched on the other) stay deleted.
+function merge3(base, local, remote){
+  if(eq(local,remote)) return local;
+  if(base!==undefined && eq(local,base)) return remote;
+  if(base!==undefined && eq(remote,base)) return local;
+  if(local===undefined) return remote; if(remote===undefined) return local;
+  if((hasIds(local)||local.length===0) && (hasIds(remote)||remote.length===0) && Array.isArray(local) && Array.isArray(remote)){
+    const bm = new Map((Array.isArray(base)?base:[]).filter(isObj).map(x=>[x.id,x]));
+    const lm = new Map(local.map(x=>[x.id,x])), rm = new Map(remote.map(x=>[x.id,x]));
+    const pick = id => {
+      const b=bm.get(id), l=lm.get(id), r=rm.get(id);
+      if(l && r) return merge3(b,l,r);
+      const one = l || r;
+      if(b && eq(b,one)) return undefined;     // deleted on the other device
+      return one;
+    };
+    const baseOrder = Array.isArray(base) ? base.map(x=>x&&x.id) : [];
+    const localMoved = !eq(local.map(x=>x.id).filter(id=>bm.has(id)), baseOrder.filter(id=>lm.has(id)));
+    const [first, second] = localMoved ? [local, remote] : [remote, local];
+    const out = []; const seen = new Set();
+    first.forEach(x=>{ const v=pick(x.id); seen.add(x.id); if(v!==undefined) out.push(v); });
+    let after = -1;
+    second.forEach(x=>{
+      const at = out.findIndex(y=>y.id===x.id);
+      if(seen.has(x.id)){ if(at>=0) after = at; return; }
+      seen.add(x.id); const v=pick(x.id); if(v===undefined) return;
+      out.splice(after+1, 0, v); after++;
+    });
+    return out;
+  }
+  if(Array.isArray(local) && Array.isArray(remote) && [...local,...remote].every(x=>!isObj(x)&&!Array.isArray(x))){
+    const b = Array.isArray(base)?base:[];
+    const removed = new Set([...b.filter(x=>!local.includes(x)), ...b.filter(x=>!remote.includes(x))]);
+    return [...new Set([...local,...remote])].filter(x=>!removed.has(x));
+  }
+  if(isObj(local) && isObj(remote)){
+    const b = isObj(base)?base:{}; const out = {};
+    new Set([...Object.keys(local),...Object.keys(remote)]).forEach(k=>{
+      const l=local[k], r=remote[k];
+      if(l===undefined || r===undefined){ const one = l===undefined?r:l; if(k in b && eq(b[k],one)) return; out[k]=one; return; }
+      const v = merge3(b[k], l, r); if(v!==undefined) out[k]=v;
+    });
+    return out;
+  }
+  return local;   // same field edited on both devices: this device wins
+}
+// Photos travel separately; the shared state keeps only a marker.
+const stripState = st => ({...st, dreams:(st.dreams||[]).map(d=>d.src ? ({...d, src:undefined, img:true}) : d).map(d=>JSON.parse(JSON.stringify(d)))});
+function cloudReq(path, opts){
+  return fetch(path, {...opts, cache:'no-store', headers:{...(opts&&opts.headers||{}), 'x-sync-key':CLOUD.code}}).then(async r=>{
+    if(r.status===409) { const e=new Error('conflict'); e.code='conflict'; throw e; }
+    if(!r.ok) throw new Error('http '+r.status);
+    return r;
+  });
+}
+function cloudStatus(st, err){ store.sync = st; CLOUD.err = err||''; emit(); }
+async function syncNow(){
+  if(!CLOUD.code) return;
+  if(CLOUD.busy){ CLOUD.again = true; return; }
+  if(navigator.onLine===false){ cloudStatus('offline'); return; }
+  CLOUD.busy = true; if(store.sync!=='synced') cloudStatus('connecting');
+  try{
+    const imgs = new Set(lsGet('sync:imgs') || []);
+    let merged, startLocal;
+    for(let attempt=0;;attempt++){
+      const {state:remote, etag} = await (await cloudReq('/api/sync')).json();
+      startLocal = stripState(store.state);
+      const base = lsGet('sync:base') || {};
+      merged = {};
+      SECTIONS.forEach(sec => {
+        const l = startLocal[sec], r = remote ? remote[sec] : undefined;
+        merged[sec] = r===undefined ? l : merge3(base[sec], l, r);
+      });
+      // upload photos this device has and the cloud does not
+      for(const d of store.state.dreams){
+        if(d.src && !imgs.has(d.id) && merged.dreams.some(x=>x.id===d.id)){
+          await cloudReq('/api/img?id='+encodeURIComponent(d.id), {method:'PUT', body:d.src});
+          imgs.add(d.id); lsSet('sync:imgs', [...imgs]);
+        }
+      }
+      if(remote && eq(merged, remote)) break;
+      try{ await cloudReq('/api/sync', {method:'PUT', headers:{'content-type':'application/json'}, body:JSON.stringify({state:merged, etag})}); break; }
+      catch(e){ if(e.code!=='conflict' || attempt>=3) throw e; }
+    }
+    // apply to this device, keeping anything typed while we were syncing
+    const nowLocal = stripState(store.state);
+    const srcOf = new Map(store.state.dreams.filter(d=>d.src).map(d=>[d.id,d.src]));
+    let changed = false; const next = {...store.state};
+    SECTIONS.forEach(sec => {
+      let v = merge3(startLocal[sec], nowLocal[sec], merged[sec]);
+      if(sec==='dreams') v = v.map(d=>{ const s=srcOf.get(d.id); if(s){ const {img,...rest}=d; return {...rest, src:s}; } return d; });
+      if(!eq(v, store.state[sec])){ next[sec]=v; changed=true; lsSet(sec, v); store.at[sec]=Date.now(); lsSet('at:'+sec, store.at[sec]); }
+    });
+    if(changed){ store.state = next; }
+    lsSet('sync:base', merged);
+    CLOUD.last = Date.now(); lsSet('sync:last', CLOUD.last);
+    cloudStatus('synced');
+    fetchMissingImages();
+  }catch(e){
+    cloudStatus(navigator.onLine===false ? 'offline' : 'error', String(e && e.message || e));
+  }
+  CLOUD.busy = false;
+  if(CLOUD.again){ CLOUD.again=false; setTimeout(syncNow, 300); }
+}
+async function fetchMissingImages(){
+  const need = store.state.dreams.filter(d=>d.img && !d.src && !d.asset);
+  for(const d of need){
+    try{
+      const src = await (await cloudReq('/api/img?id='+encodeURIComponent(d.id))).text();
+      const imgs = new Set(lsGet('sync:imgs') || []); imgs.add(d.id); lsSet('sync:imgs',[...imgs]);
+      const v = store.state.dreams.map(x=>x.id===d.id ? (()=>{ const {img,...rest}=x; return {...rest, src}; })() : x);
+      store.state = {...store.state, dreams:v}; lsSet('dreams', v); emit();
+    }catch(e){}
+  }
+}
+function scheduleSync(ms){ if(!CLOUD.code) return; clearTimeout(CLOUD.timer); CLOUD.timer = setTimeout(syncNow, ms==null?1500:ms); }
+const CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function newSyncCode(){
+  const b = new Uint8Array(16); crypto.getRandomValues(b);
+  const s = Array.from(b, x=>CODE_ABC[x%32]).join('');
+  return s.match(/.{4}/g).join('-');
+}
+function cleanCode(c){ return String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'').match(/.{1,4}/g)?.join('-') || ''; }
+async function connectSync(code){
+  CLOUD.code = cleanCode(code); lsSet('sync:code', CLOUD.code);
+  localStorage.removeItem(LS+'sync:base');   // first link: merge everything, delete nothing
+  await syncNow();
+  return store.sync==='synced';
+}
+function disconnectSync(){
+  CLOUD.code=''; clearTimeout(CLOUD.timer);
+  ['sync:code','sync:base','sync:imgs','sync:last'].forEach(k=>{ try{ localStorage.removeItem(LS+k); }catch(e){} });
+  cloudStatus('local');
+}
+function initCloud(){
+  if(!CLOUD.code || location.protocol==='file:') return;
+  if(window.claude && typeof window.claude.use==='function') return;
+  syncNow();
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') scheduleSync(100); else syncNow(); });
+  window.addEventListener('focus', ()=>scheduleSync(100));
+  window.addEventListener('online', ()=>scheduleSync(100));
+  setInterval(()=>{ if(document.visibilityState==='visible') syncNow(); }, 30000);
+}
+
 function useStore(){
   const [,force] = useState(0);
   useEffect(()=>{ const f=()=>force(x=>x+1); store.listeners.add(f); return ()=>store.listeners.delete(f); },[]);
@@ -1186,6 +1337,47 @@ function importBackup(file, done){
   r.onerror = () => done('Не вдалося прочитати файл.');
   r.readAsText(file);
 }
+function SyncCard(){
+  useStore();
+  const [mode,setMode] = useState(''); const [input,setInput] = useState(''); const [msg,setMsg] = useState(''); const [busy,setBusy] = useState(false); const [show,setShow] = useState(false); const [copied,setCopied] = useState(false);
+  const on = !!CLOUD.code;
+  const start = async code => {
+    setBusy(true); setMsg('');
+    const ok = await connectSync(code);
+    setBusy(false);
+    if(ok){ setMode(''); setInput(''); setShow(true); setMsg('Готово. Дані цього пристрою обʼєднано з хмарою, нічого не видалено.'); }
+    else { setMsg(navigator.onLine===false ? 'Немає інтернету. Синхронізація почнеться, щойно він зʼявиться.' : 'Не вдалося підключитися. Перевірте код та інтернет і спробуйте ще раз.'); }
+  };
+  const copy = async () => { try{ await navigator.clipboard.writeText(CLOUD.code); setCopied(true); setTimeout(()=>setCopied(false),2000); }catch(e){ setShow(true); } };
+  const when = CLOUD.last ? new Date(CLOUD.last).toLocaleString('uk-UA',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}) : '';
+  return html`<section class="card">
+    <div class="card-head"><h2>Синхронізація між пристроями</h2>${on && html`<span class=${'tag'+(store.sync==='error'?' warn':'')}>${store.sync==='synced'?'увімкнено':store.sync==='connecting'?'оновлюю…':store.sync==='offline'?'без інтернету':'помилка'}</span>`}</div>
+    ${!on ? html`
+      <p class="muted" style=${{margin:0}}>Щоб телефон і компʼютер бачили ті самі дані, увімкніть синхронізацію на одному пристрої й введіть той самий код на іншому. Записи з обох пристроїв обʼєднаються, нічого не зникне. Без інтернету все працює як раніше й оновиться пізніше.</p>
+      ${mode!=='join' ? html`<div class="row" style=${{marginTop:'16px'}}>
+          <${Btn} arrow disabled=${busy} onClick=${()=>start(newSyncCode())}>${busy?'Підключаю…':'Увімкнути синхронізацію'}</${Btn}>
+          <${Btn} kind="ghost" onClick=${()=>{ setMode('join'); setMsg(''); }}>У мене вже є код</${Btn}>
+        </div>`
+      : html`<form class="row" style=${{marginTop:'16px'}} onSubmit=${e=>{ e.preventDefault(); const c=cleanCode(input); if(c.replace(/-/g,'').length<16){ setMsg('Код має 16 символів, наприклад ABCD-EFGH-JKLM-NPQR.'); return; } start(c); }}>
+          <input id="sync-code" type="text" placeholder="ABCD-EFGH-JKLM-NPQR" autocomplete="off" autocapitalize="characters" spellcheck="false" value=${input} onInput=${e=>setInput(e.target.value)} style=${{flex:'1 1 220px',fontFamily:'monospace',letterSpacing:'.08em'}}/>
+          <${Btn} type="submit" disabled=${busy}>${busy?'Підключаю…':'Підключити'}</${Btn}>
+          <${Btn} kind="ghost" onClick=${()=>{ setMode(''); setMsg(''); }}>Скасувати</${Btn}>
+        </form>`}
+    ` : html`
+      <p class="muted" style=${{margin:0}}>${store.sync==='error' ? 'Зараз не вдалося звʼязатися з хмарою. Дані збережені на цьому пристрої, спробую ще раз автоматично.' : 'Зміни на цьому пристрої автоматично зʼявляються на інших, де введено цей код.'}${when ? ' Остання синхронізація: '+when+'.' : ''}</p>
+      <div style=${{marginTop:'16px',padding:'16px',borderRadius:'16px',background:'var(--surface-2)'}}>
+        <div><b>Ваш код синхронізації</b><div class="small">Введіть його на іншому пристрої: Налаштування, «У мене вже є код». Нікому його не показуйте.</div>
+          <div class="num" style=${{fontFamily:'monospace',fontSize:'20px',letterSpacing:'.1em',marginTop:'8px'}}>${show ? CLOUD.code : CLOUD.code.replace(/[A-Z0-9]/g,'•')}</div></div>
+        <div class="row" style=${{marginTop:'12px'}}><${Btn} kind="ghost" onClick=${()=>setShow(v=>!v)}>${show?'Сховати':'Показати'}</${Btn}><${Btn} kind="ghost" onClick=${copy}>${copied?'Скопійовано':'Скопіювати'}</${Btn}></div>
+      </div>
+      <div class="row" style=${{marginTop:'16px'}}>
+        <${Btn} kind="ghost" disabled=${store.sync==='connecting'} onClick=${()=>syncNow()}>Синхронізувати зараз</${Btn}>
+        <${Btn} kind="ghost" onClick=${()=>{ disconnectSync(); setMsg('Цей пристрій відключено. Дані на ньому залишилися.'); }}>Відключити цей пристрій</${Btn}>
+      </div>
+    `}
+    ${msg && html`<p class="small" style=${{margin:'12px 0 0'}}>${msg}</p>`}
+  </section>`;
+}
 function Settings({s}){
   const backupRef = useRef(null); const [bMsg,setBMsg] = useState('');
   const [sel,setSel] = useState(()=>Object.fromEntries(RESET_OPTS.map(o=>[o.k,o.def])));
@@ -1203,6 +1395,7 @@ function Settings({s}){
   };
   return html`<${React.Fragment}>
     <${Head} eyebrow="Налаштування" title="Налаштування" sub="і скидання статистики"/>
+    <${SyncCard}/>
     <section class="card">
       <div class="card-head"><h2>Скинути статистику</h2><span class="muted small">Оберіть, що почати з нуля</span></div>
       <div class="list">
@@ -1220,8 +1413,8 @@ function Settings({s}){
           </div>`}
     </section>
     <section class="card">
-      <div class="card-head"><h2>Де зберігаються дані</h2></div>
-      <p class="muted" style=${{margin:0}}>Усе зберігається на цьому пристрої й працює без інтернету. Телефон і компʼютер мають окремі копії, тож щоб перенести дані, збережіть резервну копію тут і відкрийте її на іншому пристрої.</p>
+      <div class="card-head"><h2>Резервна копія</h2></div>
+      <p class="muted" style=${{margin:0}}>Файл з усіма даними про всяк випадок. Його можна відкрити на будь-якому пристрої.</p>
       <div class="row" style=${{marginTop:'16px'}}>
         <${Btn} kind="ghost" onClick=${exportBackup}>Зберегти резервну копію</${Btn}>
         <${Btn} kind="ghost" onClick=${()=>backupRef.current&&backupRef.current.click()}>Відновити з файлу</${Btn}>
@@ -1248,7 +1441,7 @@ const PAGES = [
   {id:'dreams', label:'Галерея мрії', short:'Мрії', icon:I.star, C:Dreams},
   {id:'options', label:'Налаштування', short:'Ще', icon:I.gear, C:Settings, bottom:true}
 ];
-const SYNC_LABEL = {local:'Збережено на цьому пристрої', connecting:'Підключаюсь до сховища…', synced:'Збережено у вашому акаунті', offline:'Сховище недоступне, зберігаю локально', error:'Не вдалося зберегти в акаунт', full:'Сховище заповнене'};
+const SYNC_LABEL = {local:'Збережено на цьому пристрої', connecting:'Підключаюсь до сховища…', synced:'Синхронізовано', offline:'Сховище недоступне, зберігаю локально', error:'Не вдалося зберегти в акаунт', full:'Сховище заповнене'};
 function App(){
   const s = useStore();
   const read = () => { const h=(location.hash||'').slice(1); return PAGES.some(p=>p.id===h) ? h : 'home'; };
@@ -1273,6 +1466,7 @@ function App(){
 }
 ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
 initSync();
+initCloud();
 if('serviceWorker' in navigator){ window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(()=>{}); }); }
 try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
 </script>
