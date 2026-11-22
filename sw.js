@@ -1,5 +1,5 @@
 // I Always Win: offline cache. Bump VERSION on every release.
-const VERSION = 'iaw-v1';
+const VERSION = 'iaw-v2';
 const CORE = [
   '/', '/index.html', '/manifest.webmanifest',
   '/vendor/react.production.min.js', '/vendor/react-dom.production.min.js', '/vendor/htm.umd.js',
@@ -16,6 +16,7 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  if (url.pathname.startsWith('/api/')) return; // sync calls always go to the network
   // Pages: network first so updates arrive, cache as fallback when offline.
   if (req.mode === 'navigate') {
     e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(VERSION).then(c => c.put('/index.html', copy)); return r; })
